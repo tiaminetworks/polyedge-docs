@@ -1,0 +1,19 @@
+title: "PolyEdge Documentation"
+description: "Documentation for PolyEdge setup and deployment."
+remote_theme: pmarsceill/just-the-docs
+search_enabled: true
+show_toc: true
+show_toc_sidebar: true
+
+# Navigation structure
+nav_order: 1
+has_children: true
+
+# Base URL configuration for GitHub Pages
+baseurl: "" # If your site is hosted in a subdirectory, update this
+url: "https://<your-username>.github.io" # Replace <your-username> with your GitHub username
+
+# Exclude unnecessary files from the build
+exclude:
+  - Gemfile
+  - Gemfile.lock
