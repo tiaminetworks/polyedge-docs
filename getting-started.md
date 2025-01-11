@@ -1,7 +1,8 @@
 ---
-title: "Getting Started with PolyEdge"
+title: "Getting Started"
 nav_order: 2
 layout: default
+parent: "PolyEdge Documentation"
 ---
 
 # Getting Started
