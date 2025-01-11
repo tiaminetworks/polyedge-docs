@@ -8,6 +8,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions: # Add this block
+      contents: read
+      pages: write
+      id-token: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,6 +40,12 @@ jobs:
       name: github-pages
     runs-on: ubuntu-latest
     needs: build
+
+    permissions: # Add this block for the deploy job
+      contents: read
+      pages: write
+      id-token: write
+
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
