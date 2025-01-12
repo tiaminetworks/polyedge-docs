@@ -15,16 +15,28 @@ a {
     color: #FDD966;
 }
 
-/* Navbar background and text color */
+/* Add logo to the header */
 .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     background-color: #000000;
     color: #FDD966;
+    padding: 10px;
 }
 
-/* Adjust logo height and alignment */
 .navbar-brand img {
-    height: 50px; /* Adjust as needed */
+    height: 40px;
     margin-right: 10px;
+}
+
+.navbar a {
+    color: #FDD966;
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    color: #FFD700;
 }
 
 /* Ensure the navbar remains clean */
