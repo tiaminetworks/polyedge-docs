@@ -21,6 +21,17 @@ a {
     color: #FDD966;
 }
 
+/* Adjust logo height and alignment */
+.navbar-brand img {
+    height: 50px; /* Adjust as needed */
+    margin-right: 10px;
+}
+
+/* Ensure the navbar remains clean */
+.navbar {
+    padding: 10px 20px;
+}
+
 /* Table of Contents (TOC) text color */
 .toc {
     color: #FDD966;

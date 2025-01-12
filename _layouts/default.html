@@ -10,9 +10,14 @@
             {{ site.title }}
         </a>
     </header>
-    <main>
-        {{ content }}
-    </main>
+    <div class="container">
+        <aside class="sidebar">
+            {% include toc.html %}
+        </aside>
+        <main>
+            {{ content }}
+        </main>
+    </div>
     {% include footer.html %}
 </body>
 </html>
