@@ -1,8 +1,3 @@
-
----
-
-### Additional Section: `occupancy-tracking.md`
-```markdown
 ---
 title: "Occupancy Tracking"
 nav_order: 5
