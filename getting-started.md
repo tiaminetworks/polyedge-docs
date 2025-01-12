@@ -1,6 +1,7 @@
 ---
 title: "Getting Started"
 nav_order: 2
+classes: dark-theme
 layout: default
 parent: "PolyEdge Documentation"
 ---

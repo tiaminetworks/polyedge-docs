@@ -1,15 +1,35 @@
-/* Add logo to the header */
-.navbar-brand img {
-    height: 40px; /* Adjust size as necessary */
-    margin-right: 10px;
+/* Apply dark background and text color for the body */
+body {
+    background-color: #000000; /* Dark background */
+    color: #FDD966; /* Light text */
+    font-family: 'RedHatDisplay-Regular', sans-serif; /* Default font */
 }
 
+/* Heading styles */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'RedHatDisplay-Bold', sans-serif;
+    color: #FDD966; /* Ensure headings are readable */
+}
+
+/* Link styles */
+a {
+    color: #FDD966;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #FFD700; /* Highlight color on hover */
+}
+
+/* Table of Contents styles */
+.toc {
+    color: #FDD966;
+}
+
+/* Navbar customization */
 .navbar {
-    display: flex;
-    align-items: center;
-    background-color: #000000; /* Your desired background color */
-    color: #FDD966; /* Text color */
-    padding: 10px;
+    background-color: #000000; /* Dark navbar */
+    color: #FDD966;
 }
 
 .navbar a {
@@ -18,5 +38,25 @@
 }
 
 .navbar a:hover {
-    color: #FFD700; /* Highlight on hover */
+    color: #FFD700;
+}
+
+@font-face {
+    font-family: 'RedHatDisplay-Regular';
+    src: url('{{ site.baseurl }}/assets/fonts/RedHatDisplay-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'RedHatDisplay-Bold';
+    src: url('{{ site.baseurl }}/assets/fonts/RedHatDisplay-Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'RedHatDisplay-Italic';
+    src: url('{{ site.baseurl }}/assets/fonts/RedHatDisplay-Italic.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'RedHatDisplay-SemiBold';
+    src: url('{{ site.baseurl }}/assets/fonts/RedHatDisplay-SemiBold.ttf') format('truetype');
 }

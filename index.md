@@ -2,6 +2,7 @@
 title: "PolyEdge Documentation"
 nav_order: 1
 layout: default
+classes: dark-theme
 ---
 
 # PolyEdge Documentation
