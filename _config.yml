@@ -11,10 +11,8 @@ toc_levels: 1..3
 # Add custom CSS
 just_the_docs:
   custom_css:
-    - /home/tiami-manu/LocalPoseEstimation/WiFi/MIMO/streamer/docs/git/polyedge-docs/assets/css/custom.css
-    # - assets/css/custom.css
-
-  logo: "/home/tiami-manu/LocalPoseEstimation/WiFi/MIMO/streamer/docs/git/polyedge-docs/assets/images/logo_black.png"
+    - /polyedge-docs/assets/css/custom.css
+  logo: /polyedge-docs/assets/images/logo_black.png
 
 # Base URL configuration for GitHub Pages
 baseurl: "polyedge-docs"
