@@ -1,33 +1,15 @@
-/* Background color */
-body {
-    background-color: #000000;
-    color: #FDD966; /* Text color */
-}
-
-/* Link color */
-a {
-    color: #FDD966;
-}
-
-/* Sidebar background and text color */
-.sidebar {
-    background-color: #000000;
-    color: #FDD966;
-}
-
 /* Add logo to the header */
+.navbar-brand img {
+    height: 40px; /* Adjust size as necessary */
+    margin-right: 10px;
+}
+
 .navbar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    background-color: #000000;
-    color: #FDD966;
+    background-color: #000000; /* Your desired background color */
+    color: #FDD966; /* Text color */
     padding: 10px;
-}
-
-.navbar-brand img {
-    height: 40px;
-    margin-right: 10px;
 }
 
 .navbar a {
@@ -36,32 +18,5 @@ a {
 }
 
 .navbar a:hover {
-    color: #FFD700;
+    color: #FFD700; /* Highlight on hover */
 }
-
-/* Ensure the navbar remains clean */
-.navbar {
-    padding: 10px 20px;
-}
-
-/* Table of Contents (TOC) text color */
-.toc {
-    color: #FDD966;
-}
-
-/* Highlight hover states for links */
-a:hover {
-    color: #FFD700;
-}
-
-/* Fix search input text color */
-input[type="search"] {
-    background-color: #000000;
-    color: #FDD966;
-    border: 1px solid #FDD966;
-}
-
-input[type="search"]::placeholder {
-    color: #FDD966;
-}
-
