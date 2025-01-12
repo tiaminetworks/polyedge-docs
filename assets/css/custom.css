@@ -1,0 +1,44 @@
+/* Background color */
+body {
+    background-color: #000000;
+    color: #FDD966; /* Text color */
+}
+
+/* Link color */
+a {
+    color: #FDD966;
+}
+
+/* Sidebar background and text color */
+.sidebar {
+    background-color: #000000;
+    color: #FDD966;
+}
+
+/* Navbar background and text color */
+.navbar {
+    background-color: #000000;
+    color: #FDD966;
+}
+
+/* Table of Contents (TOC) text color */
+.toc {
+    color: #FDD966;
+}
+
+/* Highlight hover states for links */
+a:hover {
+    color: #FFD700;
+}
+
+/* Fix search input text color */
+input[type="search"] {
+    background-color: #000000;
+    color: #FDD966;
+    border: 1px solid #FDD966;
+}
+
+input[type="search"]::placeholder {
+    color: #FDD966;
+}
+
