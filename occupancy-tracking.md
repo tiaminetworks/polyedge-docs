@@ -26,6 +26,17 @@ Power the device. Ensure the device voltage is within the 100-240V AC range for 
 
 ---
 
+### Accessing the Dashboard
+
+1. **Sign up**: Enter the username, password, valid email address and provided signup code.
+   ![Sign up screenshot](dashboard-images/sign-up.png)
+2. **Verify email address**: Click on the link sent to the given email address for verification.
+3. **Access**: Once verified, the page is redirected to the dashboard with various plots for occupancy tracking.
+   ![Dashboard screenshot](dashboard-images/dashboard.png)
+4. **Customize**: All plots can be resized and shifted as required. Different timeframes and rooms can be selected to view data.
+   ![Customize plots screenshot](dashboard-images/options.png)
+
+---
 ## Previous Steps
 
 Return to [Setting Up PolyEdge](setting-up-polyedge.md).
