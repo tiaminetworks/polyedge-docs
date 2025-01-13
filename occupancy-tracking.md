@@ -1,7 +1,6 @@
 ---
 title: "Occupancy Tracking"
 nav_order: 5
-classes: dark-theme
 layout: default
 parent: "PolyEdge Documentation"
 ---

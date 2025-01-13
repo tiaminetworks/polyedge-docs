@@ -2,7 +2,6 @@
 title: "Setting Up PolyEdge"
 nav_order: 4
 layout: default
-classes: dark-theme
 parent: "PolyEdge Documentation"
 ---
 

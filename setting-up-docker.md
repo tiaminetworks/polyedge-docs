@@ -2,7 +2,6 @@
 title: "Setting Up Docker"
 nav_order: 3
 layout: default
-classes: dark-theme
 parent: "PolyEdge Documentation"
 ---
 
