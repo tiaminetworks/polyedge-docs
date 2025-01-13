@@ -28,20 +28,39 @@ Power the device. Ensure the device voltage is within the 100-240V AC range for 
 
 ### Accessing the Dashboard
 
-1. **Sign up**: Enter the username, password, valid email address and provided signup code.
+1. **Open the link**: http://bit.ly/4fYK5Me
+
+2. **Sign up**: Enter the username, password, valid email address and provided signup code.
 
    ![Sign up page](dashboard-images/sign-up.png)
 
-2. **Verify email address**: Click on the link sent to the given email address for verification.
+3. **Verify email address**: Click on the link sent to the given email address for verification.
 
-3. **Access**: Once verified, the page is redirected to the dashboard with various plots for occupancy tracking.
+4. **Access**: Once verified, the page is redirected to the dashboard with various plots for occupancy tracking.
 
    ![Dashboard](dashboard-images/dashboard.png)
 
-4. **Customize**: All plots can be resized and shifted as required. Different timeframes and rooms can be selected to view data.
+5. **Customize**: 
+
+   All plots can be resized and shifted as required. Click on Save Layout on the bottom of the page when done.
+
+   ![Save Layout](dashboard-images/save-layout.png)
+   
+   Different timeframes and rooms can be selected to view data.
 
    ![Customize plots](dashboard-images/options.png)
 
+6. **Tutorial for the dashboard**:
+
+   Click on the help button in the sidebar.
+
+   ![Help button](dashboard-images/sidebar.png)
+
+   View the step-by-step explanation of the dashboard
+
+   ![Tutorial](dashboard-images/tutorial.png)
+
+7. **Logout**: Click on the logout button in the sidebar when done.
 ---
 ## Previous Steps
 
