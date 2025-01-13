@@ -125,7 +125,7 @@ To avoid needing sudo for Docker commands, run the following commands:
 ```bash
 sudo usermod -aG docker $USER
 sudo chmod 666 /var/run/docker.sock
-```https://github.com/tiaminetworks/polyedge-docs/tree/main
+```
 ### Starting Docker Containers
 Default Commands
 
