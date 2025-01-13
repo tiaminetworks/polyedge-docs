@@ -28,7 +28,7 @@ Power the device. Ensure the device voltage is within the 100-240V AC range for 
 
 ### Accessing the Dashboard
 
-1. **Open the link**: http://bit.ly/4fYK5Me
+1. **Open the link**: https://bit.ly/polyedge-analytics
 
 2. **Sign up**: Enter the username, password, valid email address and provided signup code.
 
