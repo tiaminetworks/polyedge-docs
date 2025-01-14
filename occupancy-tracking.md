@@ -62,6 +62,15 @@ Power the device. Ensure the device voltage is within the 100-240V AC range for 
 
 7. **Logout**: Click on the logout button in the sidebar when done.
 ---
+
+### Radar Hue Visualzation
+
+The visualization tracks the occupant's movement within the room. A warning is issued if the occupant crosses the geo-boundary.
+
+![Radar-Hue](dashboard-images/radar-hue.gif)
+
+---
+
 ## Previous Steps
 
 Return to [Setting Up PolyEdge](setting-up-polyedge.md).
