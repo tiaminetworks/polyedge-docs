@@ -1,6 +1,6 @@
 # PolyEdge Documentation
 
-Welcome to the PolyEdge documentation. This guide provides step-by-step instructions for setting up and running PolyEdge, including occupancy tracking and Docker installation.
+Welcome to the PolyEdge documentation. This guide provides  instructions for setting up and running PolyEdge, including occupancy tracking and Docker installation.
 
 ---
 
@@ -12,7 +12,7 @@ Welcome to the PolyEdge documentation. This guide provides step-by-step instruct
 2. [Running PolyEdge](#running-polyedge)
    - [Updating the System](#updating-the-system)
    - [Installing Docker](#installing-docker)
-3. [Step-by-Step Docker Installation](#step-by-step-docker-installation)
+3. [Docker Installation](#docker-installation)
    - [Remove Conflicting Packages](#1-remove-conflicting-packages)
    - [Add Docker's Official GPG Key](#2-add-dockers-official-gpg-key)
    - [Add the Docker Repository to Apt Sources](#3-add-the-docker-repository-to-apt-sources)
@@ -70,7 +70,7 @@ To install Docker Engine, you need the 64-bit version of one of the following Ub
 
 ---
 
-## Step-by-Step Docker Installation
+##  Docker Installation
 
 ### 1. Remove Conflicting Packages
 
@@ -125,7 +125,7 @@ To avoid needing sudo for Docker commands, run the following commands:
 ```bash
 sudo usermod -aG docker $USER
 sudo chmod 666 /var/run/docker.sock
-```https://github.com/tiaminetworks/polyedge-docs/tree/main
+```
 ### Starting Docker Containers
 Default Commands
 

@@ -437,6 +437,8 @@ blockquote { margin: 10px 0; margin-block-start: 0; margin-inline-start: 0; padd
 @media (min-width: 31.25rem) { .site-title { font-size: 1.5rem !important; line-height: 1.25; } }
 @media (min-width: 50rem) { .site-title { padding-top: 0.5rem; padding-bottom: 0.5rem; } }
 
+.site-logo { width: 100%; height: 100%; background-image: url("/polyedge-docs/assets/images/logo_nobg.png"); background-repeat: no-repeat; background-position: left center; background-size: contain; }
+
 .site-button { display: flex; height: 100%; padding: 1rem; align-items: center; }
 
 @media (min-width: 50rem) { .site-header .site-button { display: none; } }
@@ -2422,3 +2424,24 @@ a.skip-to-main { left: -999px; position: absolute; top: auto; width: 1px; height
 a.skip-to-main:focus, a.skip-to-main:active { color: #2c84fa; background-color: #27262b; left: auto; top: auto; width: 30%; height: auto; overflow: auto; margin: 10px 35%; padding: 5px; border-radius: 15px; border: 4px solid #264caf; text-align: center; font-size: 1.2em; z-index: 999; }
 
 div.opaque { background-color: #27262b; }
+
+@font-face { font-family: 'RedHatDisplay-Regular'; src: url("../../assets/fonts/RedHatDisplay-Regular.ttf") format("truetype"); }
+@font-face { font-family: 'RedHatDisplay-Bold'; src: url("../../assets/fonts/RedHatDisplay-Bold.ttf") format("truetype"); }
+@font-face { font-family: 'RedHatDisplay-Italic'; src: url("../../assets/fonts/RedHatDisplay-Italic.ttf") format("truetype"); }
+body { background-color: #000000 !important; /* Dark background */ color: #FDD966 !important; /* Light text */ font-family: 'RedHatDisplay-Regular', sans-serif !important; /* Default font */ }
+
+h1, h2, h3, h4, h5, h6 { font-family: 'RedHatDisplay-Bold', sans-serif !important; color: #FDD966 !important; /* Ensure headings are readable */ }
+
+a { color: #FDD966 !important; text-decoration: none; }
+
+a:hover { color: #FFD700 !important; /* Highlight color on hover */ }
+
+.side-bar { z-index: 0; display: flex; flex-wrap: wrap; background-color: #27262b; }
+@media (min-width: 50rem) { .side-bar { flex-flow: column nowrap; position: fixed; width: 15.5rem; height: 100%; border-right: 1px solid #44434d; align-items: flex-end; } }
+@media (min-width: 66.5rem) { .side-bar { width: calc((100% - 66.5rem) / 20 + 16.5rem); min-width: 16.5rem; } }
+
+.site-logo { display: inline-block; }
+
+.site-logo img { width: 150%; height: 150%; }
+
+.navbar .site-logo img { max-width: 200px !important; height: auto !important; }
