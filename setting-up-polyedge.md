@@ -15,8 +15,10 @@ After installing Docker, follow these steps to configure PolyEdge:
 
 Run the following commands to start the necessary Docker containers:
 ```bash
-docker compose up
+docker compose run --service-ports polyedge
 ```
+Where the container `polyedge` is servicing PolyEdge services, by default this calls the `802.11` as the mode for sensing. 
+
 ### Step 2: Custom Arguments for WiFi and NR
 ## WiFi
 ```bash
