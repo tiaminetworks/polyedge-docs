@@ -55,8 +55,8 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 ```
 
 ### 5. Install Buildx
-## 1. Download the latest Buildx release from Docker Buildx Releases.
-## 2. Move the Buildx distribution with the following commands:
+#### 1. Download the latest Buildx release from Docker Buildx Releases.
+#### 2. Move the Buildx distribution with the following commands:
 ```bash
 mkdir -p ~/.docker/cli-plugins/
 mv <downloaded-buildx-file> ~/.docker/cli-plugins/docker-buildx
