@@ -22,7 +22,7 @@ To setup PolyEdge on standalone device:
 
 ### Applying updates and upgrades:
 
-To fetch polyedge, users must have a assigned public key from their device, or polyedge standalone granting permissions to clone the repository.
+To fetch polyedge, users must have a assigned public key from their device, or polyedge standalone granting permissions to clone the repository. New users utilizing PolyEdge standalone can skip this step.
 
 ```bash
 mkdir $HOME/git
