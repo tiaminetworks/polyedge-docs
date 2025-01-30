@@ -19,6 +19,9 @@ docker compose run --service-ports polyedge
 ```
 Where the container `polyedge` is servicing PolyEdge services, by default this calls the `802.11` as the mode for sensing. 
 
+## Antennas ports
+When utilizing the USRP B210 from Ettus Research, the receive ports are aligned on the RX2A and RX2B for NR, and TX/RXA and TX/RXB for WiFi.
+
 ### Step 2: Custom Arguments for WiFi and NR
 ## WiFi
 ```bash
