@@ -141,7 +141,7 @@ Modify docker-compose.yml or use utility scripts:
 WiFi
 ```bash
 ./stream_wifi
-./recv_wifi
+./collect_csi
 ./visualize_wifi
 ```
 NR
