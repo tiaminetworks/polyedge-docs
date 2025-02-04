@@ -140,7 +140,7 @@ Before starting either NR/WiFi sensing sessions, it is recommended to utilize `t
 ```bash
 ./start_PolyEdge_session.sh -s <session_name>
 ```
-
+To move between panes press `Ctrl/cmd+B; then arrow to the pane you want to move to`. To end the tmux session `tmux kill-session -t <session_name>`.
 Modify docker-compose.yml or use utility scripts:
 WiFi
 ```bash
