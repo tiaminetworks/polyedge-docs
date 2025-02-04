@@ -136,6 +136,10 @@ docker compose up
 ```
 
 Custom Arguments
+Before starting either NR/WiFi sensing sessions, it is recommended to utilize `tmux` for managing windows. A session can be started with:
+```bash
+./start_PolyEdge_session.sh -s <session_name>
+```
 
 Modify docker-compose.yml or use utility scripts:
 WiFi
