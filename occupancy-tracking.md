@@ -46,11 +46,32 @@ Power the device. Ensure the device voltage is within the 100-240V AC range for 
 
    ![Save Layout](dashboard-images/save-layout.png)
    
-   Different timeframes and rooms can be selected to view data.
+   Different timeframes and rooms can be selected to view data. Live Mode can be enabled for upto 2 minutes.
 
    ![Customize plots](dashboard-images/options.png)
 
-6. **Tutorial for the dashboard**:
+6. **Geofence Boundary**: Custom geofence boundary can be set as required. 
+   
+   Open the Geofencing section on the sidebar
+
+   ![Help button](dashboard-images/sidebar.png)
+
+   Initially, there is a default room plan with a geoboundary already set.
+
+   ![Default geofence](dashboard-images/default-geofence.png)  
+
+   To upload a custom room plan, click on the Choose File button on the bottom of the page. 
+
+   To set a new geofence, click on the Set New Geofence button on the bottom of the page and set the boundary as required.
+
+   ![New geofence](dashboard-images/new-geofence.png)  
+
+   Once the new geofence has been set, click on the Save Geofence Button. The red dotted box will turn green once the boundary has been set.
+
+   ![Sve geofence](dashboard-images/save-geofence.png)  
+
+
+7. **Tutorial for the dashboard**:
 
    Click on the help button in the sidebar.
 
@@ -60,7 +81,7 @@ Power the device. Ensure the device voltage is within the 100-240V AC range for 
 
    ![Tutorial](dashboard-images/tutorial.png)
 
-7. **Logout**: Click on the logout button in the sidebar when done.
+8. **Logout**: Click on the logout button in the sidebar when done.
 ---
 
 ### Radar Hue Visualzation
