@@ -146,7 +146,7 @@ WiFi
 ```bash
 ./stream_wifi
 collect_csi #Run at home directory
-./visualize_wifi
+polyedge-viz
 ```
 NR
 ```bash
