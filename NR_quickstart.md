@@ -1,4 +1,4 @@
-PolyEdge NR Release Quick Guide v25.1
+# **PolyEdge NR Release Quick Guide v25.1**
 
 <p align="right">
   <img src="figures/logo.png" alt="Company Logo" width="150">
