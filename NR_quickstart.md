@@ -16,7 +16,8 @@ The standalone edge deployment of PolyEdge for Integrated Sensing and Comms (ISA
 
 
 Which starts 4 TMUX panes for managing and executing PolyEdge applications, the panes refer to:
-1. Initializing nrUE
+1. Initializing nrUE:
+
 Initializing nrUE on the server by default should start the session on the client as well if they the ethernet connection is in place between client and server.
 
 `tiami-init-nrUE` by default runs with options:
@@ -117,13 +118,16 @@ The help section is provided below:
 --------------------------------------------------------------------
 ```
 
-2. Initializing polyedge streamer
+2. Initializing polyedge streamer:
+
 The PolyEdge streamer runs on a standalone docker container `polyedge` can can simply be invoked with `run-polyedge`  and is preloaded in the tmux session.
 
-3. Initializing sync over 802.3
+3. Initializing sync over 802.3:
+
 Data is managed across server and client with `rsync` and can be started with  `tiami-init-sync_antennas` and is preloaded in the tmux session.
 
-4. Initializing visualizer.
+4. Initializing visualizer:
+
 The visualizer can be initiated with `stream-viz` and is preloaded in the tmux session.
 
 Additional bash sessions can be initiated for task specific application such as sending COT messages: with `stream-tak`
