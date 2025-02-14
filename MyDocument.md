@@ -120,7 +120,7 @@ The visualizer can be initiated with `stream-viz` and is preloaded in the tmux s
 Additional bash sessions can be initiated for task specific application such as sending COT messages: with `stream-tak`
 Stream-tak must be initialized with the sensor's true lat/lon and heading in order to correctly interpolate the positions of the detected target, additionally users have control over which UDP ports to broadcast on as well as the broadcast IP. It can be initiated with 
 ```bash
-stream-tak   --sensor_lat 35.323918  --sensor_lon -79.248752  --sensor_heading 120.0   --broadcast_ip 255.255.255.255  --tak_port 4242  --broadcast_port 6969
+stream-tak --sensor_lat 35.323918 --sensor_lon -79.248752 --sensor_heading 120.0 --broadcast_ip 255.255.255.255 --tak_port 4242 --broadcast_port 6969
 ```
 
 
