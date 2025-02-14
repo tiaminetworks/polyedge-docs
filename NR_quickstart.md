@@ -12,7 +12,8 @@ The standalone edge deployment of PolyEdge for Integrated Sensing and Comms (ISA
 `./start_polyedge_session.sh -s <session_name>`
 
 ![System Architecture](figures/sysarch.png)
-Fig 1: System Architecture
+<p align="center"><strong>Fig 1: System Architecture</strong></p>
+
 
 Which starts 4 TMUX panes for managing and executing PolyEdge applications, the panes refer to:
 1. Initializing nrUE
