@@ -1,8 +1,11 @@
-# **PolyEdge NR Release Quick Guide v25.1**
-
-<p align="right">
-  <img src="figures/logo.png" alt="Company Logo" width="150">
-</p>
+<table width="100%">
+  <tr>
+    <td><h1><strong>PolyEdge NR Release Quick Guide v25.1</strong></h1></td>
+    <td align="right">
+      <img src="figures/logo.png" alt="Company Logo" width="150">
+    </td>
+  </tr>
+</table>
 
 The standalone edge deployment of PolyEdge for Integrated Sensing and Comms (ISAC) applications involves a server client paradigm to allow higher instantaneous BW across each receive channel for a virtual-MIMO structure. A TMUX session can be instantiated with 
 
