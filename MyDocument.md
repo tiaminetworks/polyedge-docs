@@ -10,9 +10,9 @@ Which starts 4 TMUX panes for managing and executing PolyEdge applications, the 
 1. Initializing nrUE
 Initializing nrUE on the server by default should start the session on the client as well if they the ethernet connection is in place between client and server.
 
-tiami-init-nrUE by default runs with options:
+`tiami-init-nrUE` by default runs with options:
 ```bash
--E -r 106 --ue-fo-compensation --numerology 0 --band 71 -C 622850000 --CO 46000000 --sa --nokrnmod 1 -O ../../../targets/PROJECTS/GENERIC-NR-5GC/CONF/ue.conf --clock-source 0 --time-source 0
+tiami-init-nrUE -E -r 106 --ue-fo-compensation --numerology 0 --band 71 -C 622850000 --CO 46000000 --sa --nokrnmod 1 -O ../../../targets/PROJECTS/GENERIC-NR-5GC/CONF/ue.conf --clock-source 0 --time-source 0
 ```
 
 For quick start users must provide: 
