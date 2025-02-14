@@ -1,9 +1,14 @@
 PolyEdge NR Release Quick Guide v25.1
 
+<p align="right">
+  <img src="figures/logo.png" alt="Company Logo" width="150">
+</p>
+
 The standalone edge deployment of PolyEdge for Integrated Sensing and Comms (ISAC) applications involves a server client paradigm to allow higher instantaneous BW across each receive channel for a virtual-MIMO structure. A TMUX session can be instantiated with 
 
 `./start_polyedge_session.sh -s <session_name>`
 
+![System Architecture](figures/sysarch.png)
 Fig 1: System Architecture
 
 Which starts 4 TMUX panes for managing and executing PolyEdge applications, the panes refer to:
