@@ -11,7 +11,7 @@ The standalone edge deployment of PolyEdge for Integrated Sensing and Comms (ISA
 
 `./start_polyedge_session.sh -s <session_name>`
 
-![System Architecture](figures/sysarch.png)
+![System Architecture](figures/sysarch_new.png)
 <p align="center"><strong>Fig 1: System Architecture</strong></p>
 
 
