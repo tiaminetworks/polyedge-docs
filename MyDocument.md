@@ -4,11 +4,9 @@ The standalone edge deployment of PolyEdge for Integrated Sensing and
 Comms (ISAC) applications involves a server client paradigm to allow
 higher instantaneous BW across each receive channel for a virtual-MIMO
 structure. A TMUX session can be instantiated with
-
-./start_polyedge_session.sh -s \<session_name\>
-
-![](media/image1.png){width="6.5in" height="3.4722222222222223in"}
-
+```bash
+./start_polyedge_session.sh -s \<session_name\>`
+```
 Fig 1: System Architecture
 
 Which starts 4 TMUX panes for managing and executing PolyEdge
@@ -19,18 +17,20 @@ the client as well if they the ethernet connection is in place between
 client and server.
 
 tiami-init-nrUE by default runs with options:\
+```bash
 -E -r 106 \--ue-fo-compensation \--numerology 0 \--band 71 -C 622850000
 \--CO 46000000 \--sa \--nokrnmod 1 -O
 ../../../targets/PROJECTS/GENERIC-NR-5GC/CONF/ue.conf \--clock-source 0
-\--time-source 0\
-\
+\--time-source 0
+```bash
+
 For quick start users must provide:
 
 numerology, band, center freq and carrier offset (if FDD), sa (only sa
 supported currently).
 
 The help section is provided below:\
-\
+```bash
 \-\-\-\--Help for section (root section) : 012 entries\-\-\-\-\--
 
 \--usrp-args: set the arguments to identify USRP (same syntax as in UHD)
@@ -214,6 +214,7 @@ persistence\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\
 \--T_stdout: print log messges on console
 
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
+```bash
 
 2\. Initializing polyedge streamer
 
@@ -238,6 +239,8 @@ heading in order to correctly interpolate the positions of the detected
 target, additionally users have control over which UDP ports to
 broadcast on as well as the broadcast IP. It can be initiated with\
 \
+```bash
 \`stream-tak \--sensor_lat 35.323918 \--sensor_lon -79.248752
 \--sensor_heading 120.0 \--broadcast_ip 255.255.255.255 \--tak_port 4242
 \--broadcast_port 6969 \`
+```
