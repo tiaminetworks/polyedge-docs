@@ -38,11 +38,12 @@ The **DroneTag Mini** is a precision positioning tracking device essential for c
 ### DroneTag Mini Setup
 
 1. **Device Configuration**:
-   ```bash
-   # Configure DroneTag Mini via mobile app or web interface
-   # Set update rate to 4Hz for data collection
-   # Enable position logging
-   ```
+
+   - Configure DroneTag Mini via mobile app or web interface
+   - Set update rate to 4Hz for data collection
+   - Enable position logging
+     
+NOTE: Please note that DroneTag requires LTE to update and provide tracking logs, locations with no coverage would require live broadcast over BTE.
 
 2. **Data Export Setup**:
    - Export position data as JSON format
