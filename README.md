@@ -395,8 +395,4 @@ This guide covers:
 - **Secure Model Finetuning** with comprehensive options
 - **Complete workflow examples** from data collection to deployment
 
-### Quick Reference
-
-For users with data already collected and processed:
-
 ```
