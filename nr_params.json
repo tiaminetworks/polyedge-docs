@@ -1,0 +1,12 @@
+{
+    "operator": "Operator",
+    "band": 78,
+    "frequency": 3.62e9,
+    "subcarrier_spacing": 30e3,
+    "number_of_prbs": 75,
+    "gnb_location": {
+        "lat": 38.433531,
+        "lon": -121.437309,
+        "alt": -4.8
+    }
+} 

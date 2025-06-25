@@ -1,0 +1,55 @@
+{
+  "output_directory": "./tmp/output",
+  "csv_file_path": "./tmp/output/tracking_log.csv",
+  "license_file": "./license.lic",
+  "log_level": "INFO",
+  "websocket_port": 8765,
+  "model_inference": {
+      "enabled": true,
+      "model_type": "isac_tracking",
+      "device": "cpu",
+      "gps_boundaries":  {
+      "x": {
+          "min": -41.50738856501624,
+          "max": 5.499877579475834,
+          "mean": -15.188734690437816
+        },
+      "y": {
+          "min": -108.29829492214316,
+          "max": -4.78020849600199,
+          "mean": -44.838131795633096
+        },
+      "z": {
+          "min": -5.48,
+          "max": 11.620000000000001,
+          "mean": 3.6787458100558603
+        },
+      "alt": {
+          "min": 0,
+          "max": 100
+        }
+      },
+      "reference_point": {
+          "latitude": 38.43575,
+          "longitude": -121.43635,
+          "altitude": -16.5
+      },
+      "normalization_type": "zerocenter"
+  },
+  "simulator_enabled": false,
+  "simulator_source": "./tmp/source_data",
+  "simulator_destination": "./tmp/csi_data",
+  "processing": {
+      "max_queue_size": 100,
+      "file_ready_timeout": 5.0,
+      "check_interval": 0.1
+  },
+  "tak": {
+      "enabled": false,
+      "sensor_heading": 0.0,
+      "cot_url": "10.39.62.102:8089",
+      "client_cert": "/home/tiami/PolyEdge/certs/client-key.pem",
+      "client_key": "/home/tiami/PolyEdge/certs/client-cert.pem",
+      "ca_file": "/home/tiami/PolyEdge/certs/ca-cert.pem"
+  }
+} 
