@@ -373,7 +373,9 @@ Within the tmux session:
 ### Common Issues:
 
 **No GPS Output**: Check reference point alignment between config files
+
 **TAK Connection Failed**: Verify certificate paths and TAK server connectivity
+
 **License Errors**: Ensure license file is valid and not expired
 
 ---
@@ -394,5 +396,3 @@ This guide covers:
 - **Data Setup & Processing** for training preparation
 - **Secure Model Finetuning** with comprehensive options
 - **Complete workflow examples** from data collection to deployment
-
-```
