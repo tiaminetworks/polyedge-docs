@@ -50,17 +50,28 @@ The streamer requires both configuration files to operate:
           5G NR Frame
                │
                ▼
-      ┌──────────────────┐
-      │ Signal Processing│
-      └──────────────────┘
+      ┌────────────────────────┐
+      │   Signal Processing    │
+      └────────────────────────┘
                │
                ▼
-      ┌──────────────────┐
-      │ Model Inference  │
-      └──────────────────┘
+      ┌────────────────────────┐
+      │     CAF Generation     │  
+      └────────────────────────┘
                │
                ▼
- Absolute Target Position
+      ┌────────────────────────┐
+      │ Ambiguity Match Filter │
+      └────────────────────────┘
+               │
+               ▼
+      ┌────────────────────────┐
+      │     Model Inference    │
+      └────────────────────────┘
+               │
+               ▼
+     Absolute Target Position
+
 ```
 
 #### Real-time Outputs:
