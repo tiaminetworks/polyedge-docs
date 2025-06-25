@@ -388,7 +388,7 @@ The system supports secure model finetuning to adapt to new environments or impr
 
 For comprehensive information on the complete finetuning pipeline including data collection, setup, and secure training, see:
 
-** [README_SECURE_FINETUNING.md](README_SECURE_FINETUNING.md)**
+**[README_SECURE_FINETUNING.md](README_SECURE_FINETUNING.md)**
 
 This guide covers:
 - **Ground Truth Collection** with DroneTag Mini
