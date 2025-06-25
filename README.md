@@ -47,9 +47,20 @@ The streamer requires both configuration files to operate:
 #### Streamer Operation Flow:
 
 ```
-5G NR Frame → Signal Processing → Model Inference → Absolute Target Position
-     ↑               ↑                  ↑                     ↓
-nr_params.json   config.json     trained_model          output files
+          5G NR Frame
+               │
+               ▼
+      ┌──────────────────┐
+      │ Signal Processing│
+      └──────────────────┘
+               │
+               ▼
+      ┌──────────────────┐
+      │ Model Inference  │
+      └──────────────────┘
+               │
+               ▼
+ Absolute Target Position
 ```
 
 #### Real-time Outputs:
