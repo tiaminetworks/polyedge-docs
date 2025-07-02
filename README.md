@@ -396,3 +396,24 @@ This guide covers:
 - **Data Setup & Processing** for training preparation
 - **Secure Model Finetuning** with comprehensive options
 - **Complete workflow examples** from data collection to deployment
+
+## Websocket Message delivery:
+
+Clients can use [`websocat`](https://github.com/vi/websocat) to connect to a WebSocket server from the command line.
+
+```bash
+sudo wget -qO /usr/local/bin/websocat \
+  https://github.com/vi/websocat/releases/latest/download/websocat.x86_64-unknown-linux-musl
+sudo chmod a+x /usr/local/bin/websocat
+websocat --version
+```
+If successful socket messages can be received on based on the broadcast port described in `websocket_port` field in `config.json` defaulting to `8765`
+
+For any issues on receiving socket messages please review:
+On socket client ensure:
+1. You are on the same subnet as PolyEdge, you can confirm this by pinging PolyEdge's IP, or checking for available routes via `ip -a` or equivalent. 
+2. No firewall blocks disallowing TCP broadcast
+
+On PolyEdge:
+1. It is on the same subnet as the receiving client
+2. Firewall is allowing TCP broadcast on the port configured in `config.json` check with `sudo ufw status` to ensure.
