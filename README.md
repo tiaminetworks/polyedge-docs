@@ -347,7 +347,36 @@ Within the tmux session:
 
 ### Access Via GUI
 
-The local GUI can be accessed by devices to trigger PolyEdge on the same network, sending `POSTMAN` 
+The local GUI can be accessed by devices to trigger PolyEdge on the same network, sending `POSTMAN`. 
+
+![GUI Figure](./gui-ss.png)
+
+**Radio configuration:**
+
+- Operator: text (e.g., "TMO")
+- Band: number (e.g., 71, 77, 78, 79)
+- Frequency: number in Hz (e.g., 3871200000)
+- Subcarrier spacing: dropdown (15kHz, 30kHz, 60kHz, 120kHz, 240kHz)
+- Number of PRBs: number (1-275)
+- Cell ID: number 
+- gNB position:
+          Latitude
+          Longitude
+          Altitude (meters)
+
+**PolyEdge configuration:**
+![GUI Figure](./ss-pe-config.png)
+
+- Reference point:
+          Latitude
+          Longitude
+          Altitude (meters)
+  
+**Actions:**
+- Save Configuration (for both sections)
+- Start/Stop NR UE
+- Start/Stop PolyEdge
+- Sweep NR (sweep mode)
 
 #### Postman request formats
 
