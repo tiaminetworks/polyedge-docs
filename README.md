@@ -345,7 +345,125 @@ Within the tmux session:
 - `Ctrl+b` then `x`: Kill current pane
 - `Ctrl+c`: Stop current process in pane
 
+### Access Via GUI
+
+The local GUI can be accessed by devices to trigger PolyEdge on the same network, sending `POSTMAN` 
+
+#### Postman request formats
+
+#### 1. Initialize NR UE (`init_nrUE`)
+
+**Request:**
+- Method: `POST`
+- URL: `http://localhost:3000/api/process/init_nrUE`
+- Headers:
+  - `Content-Type: application/json`
+- Body (raw JSON):
+```json
+{
+  "operator": "TMO",
+  "band": 71,
+  "frequency": 622850000,
+  "subcarrier_spacing": 15000,
+  "number_of_prbs": 106,
+  "cell_id": 842,
+  "gnb_location": {
+    "lat": 38.431722,
+    "lon": -121.438829,
+    "alt": 25.0
+  }
+}
+```
+
+**Required fields:**
+- `band` (number): e.g., 71, 78, 79, 257, 258, 260
+- `frequency` (number): 100MHz to 10GHz (e.g., 622850000)
+- `subcarrier_spacing` (number): 15000, 30000, or 60000 (must match band)
+- `number_of_prbs` (number): 1-275
+
+**Optional fields:**
+- `operator` (string): e.g., "TMO", "ATT", "VZW"
+- `cell_id` (number)
+- `gnb_location` (object):
+  - `lat` (number): latitude
+  - `lon` (number): longitude
+  - `alt` (number): altitude
+
+**Success response:**
+```json
+{
+  "success": true,
+  "pid": 12345,
+  "message": "Process init_nrUE started successfully"
+}
+```
+
+**Error response (400):**
+```json
+{
+  "error": "Missing required parameters: band, frequency, subcarrier_spacing, number_of_prbs"
+}
+```
+
 ---
+
+#### 2. Start PolyEdge (`stream_main`)
+
+**Request:**
+- Method: `POST`
+- URL: `http://localhost:3000/api/process/stream_main`
+- Headers:
+  - `Content-Type: application/json` (optional, no body required)
+- Body: none (empty)
+
+**Success response:**
+```json
+{
+  "success": true,
+  "pid": 12346,
+  "message": "Process stream_main started successfully"
+}
+```
+
+**Error response (500):**
+```json
+{
+  "error": "Script not found: /opt/polyedge/stream_main.py. Run install-polyedge-interact-service.sh to create symlinks to ~/PolyEdge/"
+}
+```
+
+---
+
+#### Additional endpoints
+
+#### Stop a process
+- Method: `POST`
+- URL: `http://localhost:3000/api/process/{processId}/stop`
+- Example: `http://localhost:3000/api/process/init_nrUE/stop`
+- Body: none
+
+#### Get process status
+- Method: `GET`
+- URL: `http://localhost:3000/api/process/{processId}/status`
+- Example: `http://localhost:3000/api/process/init_nrUE/status`
+
+#### Get all processes
+- Method: `GET`
+- URL: `http://localhost:3000/api/processes`
+
+---
+
+#### Notes
+
+1. Replace `localhost:3000` with your server IP if accessing remotely.
+2. Band/SCS validation:
+   - Band 71: only 15000 Hz
+   - Bands 78, 79: 15000 or 30000 Hz
+   - Bands 257, 258, 260: 15000, 30000, or 60000 Hz
+3. Frequency must be between 100,000,000 (100 MHz) and 10,000,000,000 (10 GHz).
+4. PRBs must be between 1 and 275.
+
+These formats match the API endpoints in `server.js`.
 
 ## System Operation
 
