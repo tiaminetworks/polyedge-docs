@@ -365,6 +365,7 @@ The local GUI can be accessed by devices to trigger PolyEdge on the same network
           Altitude (meters)
 
 **PolyEdge configuration:**
+
 ![GUI Figure](./ss-pe-config.png)
 
 - Reference point:
