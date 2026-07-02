@@ -7,9 +7,9 @@ parent: "PolyEdge Documentation"
 
 # Operating PolyEdge
 
-This page covers starting the radio, setting TX/RX locations, and the configuration items that control detection. Full field-by-field reference: [API Reference](api-reference.md), Orchestrator API.
+Operating PolyEdge means starting the radio, setting TX/RX locations, and configuring the items that control detection. Full field-by-field reference: [API Reference](api-reference.md), Orchestrator API.
 
-Requires `polyedge-radio` installed (see [Installation](installation.md)) and a valid license (see [Licensing](licensing.md)).
+PolyEdge requires `polyedge-radio` installed (see [Installation](installation.md)) and a valid license (see [Licensing](licensing.md)) before the radio will start.
 
 ## TX and RX location
 

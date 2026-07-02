@@ -7,7 +7,7 @@ parent: "PolyEdge Documentation"
 
 # Interacting with PolyEdge
 
-There are two ways to interact with a running PolyEdge deployment: the web GUI, and the REST/WebSocket APIs directly.
+PolyEdge exposes a running deployment through two interfaces: a web GUI and REST/WebSocket APIs, callable directly.
 
 ## The web GUI
 
