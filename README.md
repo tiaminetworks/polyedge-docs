@@ -82,19 +82,30 @@ From `config.json`:
 
 ```
           5G NR Frame
-               |
-               v
-      +------------------------+
-      |   Signal Processing    |
-      +------------------------+
-               |
-               v
-      +------------------------+
-      |    Model Inference     |
-      +------------------------+
-               |
-               v
-      Absolute Target Position
+               │
+               ▼
+      ┌────────────────────────┐
+      │   Signal Processing    │
+      └────────────────────────┘
+               │
+               ▼
+      ┌────────────────────────┐
+      │ Cross-Ambiguity (CAF)  │
+      └────────────────────────┘
+               │
+               ▼
+      ┌────────────────────────┐
+      │  Detection / Matched   │
+      │        Filtering       │
+      └────────────────────────┘
+               │
+               ▼
+      ┌────────────────────────┐
+      │     Model Inference    │
+      └────────────────────────┘
+               │
+               ▼
+     Absolute Target Position
 ```
 
 ### Real-time outputs

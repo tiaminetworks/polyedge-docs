@@ -6,8 +6,6 @@ layout: default
 
 # PolyEdge Documentation
 
-<!-- ![PolyEdge Logo](assets/images/logo_black.png) -->
-
 Welcome to the PolyEdge documentation. This guide covers installing, operating, and integrating with PolyEdge.
 
 ## What is PolyEdge?
