@@ -14,23 +14,20 @@
 }
 
 body {
-    background-color: #000000 !important; /* Dark background */
-    color: #FDD966 !important; /* Light text */
     font-family: 'RedHatDisplay-Regular', sans-serif !important; /* Default font */
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'RedHatDisplay-Bold', sans-serif !important;
-    color: #FDD966 !important; /* Ensure headings are readable */
 }
 
 a {
-    color: #FDD966 !important;
+    color: #0b80ff !important; /* Tiami Networks brand blue */
     text-decoration: none;
 }
 
 a:hover {
-    color: #FFD700 !important; /* Highlight color on hover */
+    color: #0056b3 !important; /* Darker blue on hover, matches product UI hover state */
 }
 
 .side-bar {
@@ -59,14 +56,29 @@ a:hover {
     display: inline-block;
 }
 
-// Adjust the size of the logo
+// Adjust the size of the logo, preserving aspect ratio
 .site-logo img {
     width: 150%;
-    height: 150%;
+    height: auto;
 }
 
 // Adjust the size of the logo with higher specificity
 .navbar .site-logo img {
     max-width: 200px !important; // Set the maximum width as desired
     height: auto !important;     // Maintain aspect ratio
+}
+
+// The theme's default content column (max-width: 50rem) leaves huge unused
+// margins on modern wide viewports. Widen it so the page uses the space
+// instead of rendering like a narrow, centered mobile column.
+@media (min-width: 50rem) {
+    .main {
+        max-width: 75rem !important;
+    }
+}
+
+@media (min-width: 66.5rem) {
+    .side-bar + .main {
+        margin-left: Max(16.5rem, calc((100% - 75rem) / 2 + 16.5rem)) !important;
+    }
 }

@@ -6,10 +6,6 @@ layout: default
 
 # PolyEdge Documentation
 
-Welcome to the PolyEdge documentation. This guide covers installing, operating, and integrating with PolyEdge.
-
-## What is PolyEdge?
-
 PolyEdge is a real-time ISAC (Integrated Sensing and Communications) localization system that uses 5G NR downlink synchronization signals, and more broadly commercial LTE/NR/wideband RF, to track and locate targets, with TAK integration for tactical situational awareness.
 
 The core system is a **passive bistatic radar** pipeline. It correlates a reference path (the direct path from an illuminator you don't control, such as an existing 4G/5G tower) with a surveillance path (energy scattered off targets), forming range-Doppler data, running detection and clutter processing, and, when configured, ML inference and streaming outputs including drone/RID detection.

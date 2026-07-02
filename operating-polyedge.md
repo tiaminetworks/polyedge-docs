@@ -11,16 +11,16 @@ This page covers starting the radio, setting TX/RX locations, and the configurat
 
 Requires `polyedge-radio` installed (see [Installation](installation.md)) and a valid license (see [Licensing](licensing.md)).
 
-## TX vs. RX location: do not confuse these
+## TX and RX location
 
-PolyEdge is a **passive bistatic** system. It listens to an illuminator you don't control (the TX) and correlates that against what scatters off targets, received at your sensor (the RX). These are two separate, distinct config fields:
+PolyEdge is a **passive bistatic** system. It listens to an illuminator you don't control (the TX) and correlates that against what scatters off targets, received at your sensor (the RX). These are two separate config fields:
 
 | Field | Meaning | Where it lives |
 |---|---|---|
-| `gnb_location` (`lat`, `lon`, `alt`) | The illuminator's position: the cell tower or gNB you're using as a reference signal source. Not something you control, just something you measure or look up. | NR parameters (`nr_params.json`) |
+| `gnb_location` (`lat`, `lon`, `alt`) | The illuminator's position: the cell tower or gNB used as a reference signal source. Measured or looked up, not something you control. | NR parameters (`nr_params.json`) |
 | `reference_point` (`latitude`, `longitude`, `altitude`) | Your own sensor/receiver's position. | Stream configuration (`config.json`'s `model_inference.reference_point`) |
 
-Get this wrong and range/bearing calculations will be wrong even if signal processing is working perfectly. These two points define the bistatic geometry.
+Both points define the bistatic geometry and feed the range/bearing calculations directly, so accuracy on each matters independently.
 
 ## NR parameters
 

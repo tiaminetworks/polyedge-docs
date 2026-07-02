@@ -250,7 +250,7 @@ Common bands: **66** (AWS-3, 2.15268e9 Hz, 15kHz SCS, 106 PRBs), **71** (600MHz,
 </p>
 <p align="center"><em>PolyEdge configuration screen: sensor reference point.</em></p>
 
-- `model_inference.reference_point`: **your own sensor/receiver's** position. This is distinct from `gnb_location` above: that's the illuminator/TX, this is your RX. Do not confuse the two. They are not required to be identical, since bistatic geometry needs both points separately.
+- `model_inference.reference_point`: **your own sensor/receiver's** position. This is distinct from `gnb_location` above: that's the illuminator/TX, this is your RX. They are not required to be identical, since bistatic geometry needs both points separately.
 - `websocket.port`: real-time streaming, default 8765.
 - `tak.cot_url`: the scheme decides the transport, independent of which system is on the receiving end. Use `tls://host:8089` for mutual-TLS (a real TAK server, or a **FAAD C2** (Forward Area Air Defense Command and Control) endpoint configured for TLS), which needs `client_cert`/`client_key`/`ca_file`. Use `udp://host:6969` for a FAAD C2 endpoint configured for plain UDP; no certificates required.
 
