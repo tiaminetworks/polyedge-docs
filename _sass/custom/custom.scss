@@ -13,72 +13,122 @@
     src: url('../../assets/fonts/RedHatDisplay-Italic.ttf') format('truetype');
 }
 
+// Palette matches the PolyEdge Situational Intelligence product
+// (polyedge-situational-intel/polyedge_situational_intel/ui/styles.css :root tokens).
+$tn-bg: #090d14;
+$tn-surface: #111a2b;
+$tn-surface-alt: #0d1523;
+$tn-border: rgba(120, 144, 177, 0.18);
+$tn-text: #f4f7fb;
+$tn-text-muted: #adb8c8;
+$tn-accent-cool: #4ea2ff;
+$tn-accent-cool-hover: #7fb5ff;
+
 body {
-    font-family: 'RedHatDisplay-Regular', sans-serif !important; /* Default font */
+    font-family: 'RedHatDisplay-Regular', sans-serif !important;
+    background-color: $tn-bg !important;
+    color: $tn-text !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'RedHatDisplay-Bold', sans-serif !important;
+    color: $tn-text !important;
+}
+
+p, li, td, th {
+    color: $tn-text-muted !important;
 }
 
 a {
-    color: #0b80ff !important; /* Tiami Networks brand blue */
+    color: $tn-accent-cool !important;
     text-decoration: none;
 }
 
 a:hover {
-    color: #0056b3 !important; /* Darker blue on hover, matches product UI hover state */
+    color: $tn-accent-cool-hover !important;
 }
 
 .side-bar {
-    z-index: 0;
-    display: flex;
-    flex-wrap: wrap;
-    background-color: $sidebar-color;
-  
-    @include mq(md) {
-      flex-flow: column nowrap;
-      position: fixed;
-      width: $nav-width-md;
-      height: 100%;
-      border-right: $border $border-color;
-      align-items: flex-end;
+    background-color: $tn-surface-alt !important;
+    border-right: 1px solid $tn-border !important;
+}
+
+.nav-list-link {
+    color: $tn-text-muted !important;
+}
+
+.nav-list-link.active, .nav-list-item .nav-list-link:hover {
+    color: $tn-accent-cool !important;
+    background-color: rgba(78, 162, 255, 0.08) !important;
+}
+
+.site-title {
+    color: $tn-text !important;
+}
+
+.main-header {
+    background-color: $tn-bg !important;
+    border-bottom: 1px solid $tn-border !important;
+}
+
+.search-input {
+    background-color: $tn-surface !important;
+    color: $tn-text !important;
+}
+
+table, .table-wrapper table {
+    background-color: $tn-surface !important;
+}
+
+table th {
+    background-color: $tn-surface-alt !important;
+    color: $tn-text !important;
+}
+
+table td {
+    border-color: $tn-border !important;
+}
+
+code, pre, .highlight {
+    background-color: $tn-surface !important;
+    color: $tn-text !important;
+}
+
+// Fixed sidebar width; simpler and more predictable than the theme's
+// viewport-scaling default, which produced an uneven, growing sidebar
+// on wide screens.
+@media (min-width: 50rem) {
+    .side-bar {
+        width: 17.5rem !important;
     }
-  
-    @include mq(lg) {
-      width: calc((100% - #{$nav-width + $content-width}) / 20 + #{$nav-width});
-      min-width: $nav-width;
-    }
-  }
-
-// Ensure the logo image is displayed correctly
-.site-logo {
-    display: inline-block;
 }
 
-// Adjust the size of the logo, preserving aspect ratio
-.site-logo img {
-    width: 150%;
-    height: auto;
-}
-
-// Adjust the size of the logo with higher specificity
-.navbar .site-logo img {
-    max-width: 200px !important; // Set the maximum width as desired
-    height: auto !important;     // Maintain aspect ratio
-}
-
-// The theme's default content column (max-width: 50rem) leaves huge unused
-// margins on modern wide viewports. Widen it so the page uses the space
-// instead of rendering like a narrow, centered mobile column.
+// Anchor content right after the sidebar instead of centering it in the
+// remaining space (the theme default), which left a large empty gap
+// between the sidebar and the text. Let the content use the available
+// width up to a generous cap, matching the product's own page width.
 @media (min-width: 50rem) {
     .main {
-        max-width: 75rem !important;
+        margin-left: 17.5rem !important;
+        max-width: min(1700px, calc(100% - 17.5rem - 3rem)) !important;
     }
 }
 
+// .site-logo has no <img> element: the theme renders it as a background-image
+// on an empty div, sized to 100% of its ancestor chain (.site-title, then
+// .site-header). The header was fixed at a cramped 3.75rem (60px), which is
+// why the logo rendered as a tiny icon regardless of the source file's size.
+// Widen site-header/nav/footer to match the sidebar, and give the header
+// more height so the logo (rendered with background-size: contain) scales up.
 @media (min-width: 66.5rem) {
-    .side-bar + .main {
-        margin-left: Max(16.5rem, calc((100% - 75rem) / 2 + 16.5rem)) !important;
+    .site-nav, .site-header, .site-footer {
+        width: 17.5rem !important;
+    }
+}
+
+@media (min-width: 50rem) {
+    .site-header {
+        height: 5.5rem !important;
+        max-height: 5.5rem !important;
     }
 }
