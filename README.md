@@ -1,6 +1,6 @@
 # PolyEdge Documentation
 
-PolyEdge is passive ISAC (Integrated Sensing and Communications) software: it uses commercial LTE/NR and wideband RF as illuminators to detect and track targets in real time, with TAK integration for tactical situational awareness, REST/WebSocket/MQTT outputs for programmatic integration, and hardware-bound license-secured model inference.
+PolyEdge is passive ISAC (Integrated Sensing and Communications) software. It uses commercial LTE/NR and wideband RF as illuminators to detect and track targets in real time, with TAK integration for tactical situational awareness, REST/WebSocket/MQTT outputs for programmatic integration, and hardware-bound license-secured model inference.
 
 Full per-topic guides render at **https://tiaminetworks.github.io/polyedge-docs/** ([Installation](installation.md), [Interacting with PolyEdge](interacting-with-polyedge.md), [Updating PolyEdge](updating-polyedge.md), [Operating PolyEdge](operating-polyedge.md), [Data Outputs & Integrations](data-outputs-and-integrations.md), [Licensing](licensing.md), [Model Finetuning](model-finetuning.md), [API Reference](api-reference.md)). This file is the single-document version for anyone reading straight off GitHub.
 
@@ -9,7 +9,7 @@ Full per-topic guides render at **https://tiaminetworks.github.io/polyedge-docs/
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [The Streamer](#the-streamer)
+2. [The ISAC Engine](#the-isac-engine)
 3. [Installation](#installation)
 4. [Interacting with PolyEdge](#interacting-with-polyedge)
 5. [Updating PolyEdge](#updating-polyedge)
@@ -23,76 +23,152 @@ Full per-topic guides render at **https://tiaminetworks.github.io/polyedge-docs/
 
 ## Overview
 
-PolyEdge is a real-time ISAC localization system that uses 5G NR downlink synchronization signals (and, more broadly, commercial LTE/NR/wideband RF) as an illuminator to detect and track targets — passive bistatic radar: correlate the direct path from a tower you don't control against the path scattered off a target, without operating your own transmitter.
+PolyEdge is a real-time ISAC localization system that uses 5G NR downlink synchronization signals, and more broadly commercial LTE/NR/wideband RF, to track and locate targets, with TAK integration for tactical situational awareness. This is passive bistatic radar: the direct path from a tower you don't control is correlated against the path scattered off a target, without operating your own transmitter.
+
+System components:
+
+- **Real-time, non-cooperative target localization**: converts 5G NR frames to absolute target positions using ISAC.
+- **TAK integration**: broadcasts target locations to tactical systems.
+- **5G NR interface**: interfaces with 5G networks for signal data collection.
+- **License validation**: secure operation with hardware-bound licensing.
+- **Process orchestration**: concurrent management of the radio and ISAC Engine processes through the GUI's orchestrator API.
 
 <p align="center">
   <img src="assets/images/polyedge-isac.gif" alt="PolyEdge passive ISAC bistatic scenario" width="720" />
 </p>
-<p align="center"><em>PolyEdge ISAC — default passive mode: a cellular illuminator you don't control, a target, and your receive site.</em></p>
+<p align="center"><em>PolyEdge ISAC: default passive mode. A cellular illuminator you don't control, a target, and your receive site.</em></p>
 
 <p align="center">
   <img src="assets/images/polyran.png" alt="PolyRAN O-RAN DU with Tiami ISAC" width="600" />
 </p>
-<p align="center"><em>PolyRAN — the active, gNB-integrated complement: sensing co-located with the cellular stack.</em></p>
+<p align="center"><em>PolyRAN: the active, gNB-integrated complement, with sensing co-located with the cellular stack.</em></p>
 
-## The Streamer
+## The ISAC Engine
 
-**The streamer is PolyEdge** — the core real-time processing engine that ingests 5G NR signal collection and produces ISAC localization. Everything else in this document (GUI, REST/WebSocket/MQTT/TAK outputs, license validation) is an interface to or a consumer of the streamer, not a separate peer component.
+**The ISAC Engine is PolyEdge.** It is the core real-time processing engine that bridges 5G NR signal collection with ISAC localization. Everything else in this document, including the GUI, the REST/WebSocket/MQTT/TAK outputs, and license validation, is an interface to the ISAC Engine or a consumer of its output, not a separate peer component.
 
-It continuously processes downlink synchronization signal data and produces absolute coordinates via a combination of passive-radar-based processing and ML.
+The ISAC Engine continuously processes downlink synchronization signal data and produces absolute coordinates using a combination of passive-radar-based processing and machine learning.
 
-**How it works:**
+### How the ISAC Engine works
 
-1. **5G NR frame ingestion** — receives raw downlink 5G NR frames; PolyEdge replicates the complete L1-PHY stack to demodulate and use the downlink telemetry as a sensing resource
-2. **Real-time processing** — signal processing and normalization
-3. **Model inference** — the trained model predicts absolute target positions
-4. **Output generation** — streams results to CSV logs, WebSocket clients, REST API, MQTT, and TAK systems
+1. **5G NR frame ingestion.** PolyEdge receives raw downlink 5G NR frames. It replicates the complete L1-PHY stack, optimized for ISAC, to demodulate and use the downlink telemetry as the sensing resource.
+2. **Real-time processing.** Signal processing and normalization.
+3. **Model inference.** The trained model predicts absolute target positions.
+4. **Output generation.** Results stream to CSV logs, WebSocket clients, the REST API, MQTT, and TAK systems.
 
-**Startup sequence:** license validation → configuration loading (`nr_params.json`, `config.json`) → model loading → processing pipeline init → output setup → continuous operation.
+### Configuration dependencies
 
-**Normal operation:** consistent frame processing (no queue buildup), coordinates at regular intervals, model confidence typically 0.3–0.8, no timeout errors. Queue buildup = processing bottleneck; low confidence = poor RF conditions or model mismatch.
+The ISAC Engine requires both configuration files to operate.
+
+From `nr_params.json`:
+
+- `band`: determines signal processing parameters for the specific 5G band.
+- `frequency`: sets the center frequency for 5G NR frame processing.
+- `subcarrier_spacing`: configures the numerology used for signal analysis.
+- `number_of_prbs`: defines the resource block processing scope.
+- `gnb_location`: used as the illuminator reference point for coordinate transformations.
+
+From `config.json`:
+
+- `model_inference.enable`: controls whether target positioning is active.
+- `model_inference.device`: sets the processing device (CPU or GPU).
+- `model_inference.reference_point`: your sensor's position, used for coordinate transformations alongside `gnb_location` (see [Operating PolyEdge](operating-polyedge.md) for how the two relate).
+- `output_directory`: where processed data and logs are written.
+- `websocket.port`: real-time streaming configuration, default 8765.
+- `rf_config.processing.max_queue_size`: 5G NR frame queue management.
+- `rf_config.processing.file_ready_timeout`: file processing timing.
+
+### Processing pipeline
+
+```
+          5G NR Frame
+               |
+               v
+      +------------------------+
+      |   Signal Processing    |
+      +------------------------+
+               |
+               v
+      +------------------------+
+      |    Model Inference     |
+      +------------------------+
+               |
+               v
+      Absolute Target Position
+```
+
+### Real-time outputs
+
+- **CSV logging**: continuous target position tracking log (`tracking_log.csv`).
+- **WebSocket stream**: real-time coordinate broadcasting (port 8765 by default).
+- **Console output**: processing statistics and system status.
+- **TAK integration**: formatted messages for tactical displays.
+
+### Performance indicators
+
+Normal operation looks like:
+
+- Consistent 5G NR frame processing, with no queue buildup.
+- Target coordinates generated at regular intervals.
+- Model confidence scores above 0.3, typically in the 0.3-0.8 range.
+- No timeout errors in the processing queue.
+
+Signs of a problem:
+
+- Queue buildup indicates a processing bottleneck.
+- Low confidence scores suggest poor RF conditions or a model mismatch.
+- Missing target position output indicates a configuration or model issue.
+
+### Startup sequence
+
+1. **License validation**: verifies the license file before operation.
+2. **Configuration loading**: reads `nr_params.json` and `config.json`.
+3. **Model loading**: loads the trained target positioning model.
+4. **Processing pipeline initialization**: initializes 5G NR frame processing and the inference pipeline.
+5. **Output setup**: creates directories and initializes logging.
+6. **Real-time operation**: begins continuous 5G NR frame processing.
 
 ## Installation
 
-PolyEdge ships as four versioned `.deb` packages, installed in order:
+PolyEdge ships as four versioned `.deb` packages, installed in this order:
 
 | Package | Installs |
 |---|---|
 | `polyedge-runtime` | Config contract, state, license placeholder |
-| `polyedge-radio` | 5G NR UE stack (`nr-uesoftmodem`), `tiami-ringd`, radio libs — independent build chain |
-| `polyedge-streamer` | The streamer binary |
+| `polyedge-radio` | 5G NR UE stack (`nr-uesoftmodem`), `tiami-ringd`, radio libs (independent build chain) |
+| `polyedge-streamer` | The ISAC Engine binary |
 | `polyedge-interact` | The GUI web app (port 3000) |
 
 Full detail: [Installation](installation.md).
 
 ## Interacting with PolyEdge
 
-The GUI (`polyedge-interact`, port 3000 — find the URL with `polyedge-interact-status`) provides Configuration, Monitoring, and Process Control. Everything it does is backed by a REST API you can also call directly. Full API reference: [API Reference](api-reference.md). Details: [Interacting with PolyEdge](interacting-with-polyedge.md).
+The GUI (`polyedge-interact`, port 3000; find the URL with `polyedge-interact-status`) provides Configuration, Monitoring, and Process Control. It is backed by a REST API you can also call directly. Full API reference: [API Reference](api-reference.md). Details: [Interacting with PolyEdge](interacting-with-polyedge.md).
 
 <p align="center">
   <img src="assets/images/gui-ss.png" alt="PolyEdge GUI radio configuration screen" width="600" />
 </p>
-<p align="center"><em>Radio configuration screen — operator, band, frequency, subcarrier spacing, PRBs, cell ID, gNB position.</em></p>
+<p align="center"><em>Radio configuration screen: operator, band, frequency, subcarrier spacing, PRBs, cell ID, and gNB position.</em></p>
 
 Radio configuration fields, as shown above:
 
 | Field | Type |
 |---|---|
 | Operator | text (e.g. "TMO") |
-| Band | number (e.g. 71, 77, 78, 79) |
+| Band | 3GPP NR band number (e.g. 41, 71, 77); see [Operating PolyEdge](operating-polyedge.md) for enforced band/SCS combinations |
 | Frequency | number in Hz (e.g. 3871200000) |
 | Subcarrier spacing | dropdown (15/30/60/120/240 kHz) |
-| Number of PRBs | number (1–275) |
+| Number of PRBs | number (1-275) |
 | Cell ID | number |
 | gNB position | latitude, longitude, altitude (meters) |
 
 ## Updating PolyEdge
 
-Self-update fetches a version manifest and reinstalls the packages — triggered via `POST /api/system/update` from the GUI, gated by `POLYEDGE_ALLOW_UPDATE=true` and a configured `POLYEDGE_UPDATE_MANIFEST_URL`. Details: [Updating PolyEdge](updating-polyedge.md).
+Self-update fetches a version manifest and reinstalls the packages. It is triggered via `POST /api/system/update` from the GUI, and gated by `POLYEDGE_ALLOW_UPDATE=true` and a configured `POLYEDGE_UPDATE_MANIFEST_URL`. Details: [Updating PolyEdge](updating-polyedge.md).
 
 ## Configuration Files
 
-### `nr_params.json` — 5G NR network parameters
+### `nr_params.json`: 5G NR network parameters
 
 ```json
 {
@@ -109,16 +185,16 @@ Self-update fetches a version manifest and reinstalls the packages — triggered
 }
 ```
 
-- `operator` — network operator name
-- `band` — 5G NR frequency band number (e.g. 66, 71, 78)
-- `frequency` — center frequency in Hz
-- `subcarrier_spacing` — 15e3 (15 kHz) or 30e3 (30 kHz), band-dependent
-- `number_of_prbs` — physical resource block count
-- `gnb_location` — **the illuminator's** GPS position (`lat`/`lon`/`alt`) — this is the TX/tower you don't control, not your own sensor
+- `operator`: network operator name.
+- `band`: 5G NR frequency band number (e.g. 66, 71, 78).
+- `frequency`: center frequency in Hz.
+- `subcarrier_spacing`: 15e3 (15 kHz) or 30e3 (30 kHz), depending on band.
+- `number_of_prbs`: physical resource block count.
+- `gnb_location`: **the illuminator's** GPS position (`lat`/`lon`/`alt`). This is the TX/tower you don't control, not your own sensor.
 
 Common bands: **66** (AWS-3, 2.15268e9 Hz, 15kHz SCS, 106 PRBs), **71** (600MHz, 622850000 Hz, 15kHz SCS, 106 PRBs), **78** (3.5GHz, 3.68e9 Hz, 30kHz SCS, 75 PRBs).
 
-### `config.json` — system + TAK configuration
+### `config.json`: system and TAK configuration
 
 ```json
 {
@@ -126,9 +202,12 @@ Common bands: **66** (AWS-3, 2.15268e9 Hz, 15kHz SCS, 106 PRBs), **71** (600MHz,
   "csv_file_path": "./tmp/output/tracking_log.csv",
   "license_file": "./license.lic",
   "log_level": "INFO",
-  "websocket_port": 8765,
-  "model_inference": {
+  "websocket": {
       "enabled": true,
+      "port": 8765
+  },
+  "model_inference": {
+      "enable": true,
       "device": "cpu",
       "reference_point": {
           "latitude": 38.43575,
@@ -137,10 +216,12 @@ Common bands: **66** (AWS-3, 2.15268e9 Hz, 15kHz SCS, 106 PRBs), **71** (600MHz,
       },
       "normalization_type": "zerocenter"
   },
-  "processing": {
-      "max_queue_size": 100,
-      "file_ready_timeout": 5.0,
-      "check_interval": 0.1
+  "rf_config": {
+      "processing": {
+          "max_queue_size": 100,
+          "file_ready_timeout": 5.0,
+          "check_interval": 0.1
+      }
   },
   "tak": {
       "enabled": false,
@@ -156,11 +237,11 @@ Common bands: **66** (AWS-3, 2.15268e9 Hz, 15kHz SCS, 106 PRBs), **71** (600MHz,
 <p align="center">
   <img src="assets/images/ss-pe-config.png" alt="PolyEdge GUI stream/reference-point configuration screen" width="600" />
 </p>
-<p align="center"><em>PolyEdge configuration screen — sensor reference point.</em></p>
+<p align="center"><em>PolyEdge configuration screen: sensor reference point.</em></p>
 
-- `model_inference.reference_point` — **your own sensor/receiver's** position. This is distinct from `gnb_location` above (that's the illuminator/TX; this is your RX) — do not confuse the two, but they are not required to be identical either, since bistatic geometry needs both points separately.
-- `websocket_port` — real-time streaming (default 8765)
-- `tak.cot_url` — scheme decides transport: `tls://host:8089` for a real TAK server (needs `client_cert`/`client_key`/`ca_file`); `udp://host:6969` for certificate-free UDP output (referred to internally as **"FAAD C2"** — same CoT output, no TAK server required)
+- `model_inference.reference_point`: **your own sensor/receiver's** position. This is distinct from `gnb_location` above: that's the illuminator/TX, this is your RX. Do not confuse the two. They are not required to be identical, since bistatic geometry needs both points separately.
+- `websocket.port`: real-time streaming, default 8765.
+- `tak.cot_url`: the scheme decides the transport, independent of which system is on the receiving end. Use `tls://host:8089` for mutual-TLS (a real TAK server, or a **FAAD C2** (Forward Area Air Defense Command and Control) endpoint configured for TLS), which needs `client_cert`/`client_key`/`ca_file`. Use `udp://host:6969` for a FAAD C2 endpoint configured for plain UDP; no certificates required.
 
 Full field reference: [Operating PolyEdge](operating-polyedge.md), [Data Outputs & Integrations](data-outputs-and-integrations.md).
 
@@ -175,16 +256,16 @@ curl -X POST http://<host>:3000/api/process/stream_main
 
 Full walkthrough: [Operating PolyEdge](operating-polyedge.md).
 
-**Common issues:** no GPS output → check reference point alignment; TAK connection failed → verify certificate paths and server connectivity; license errors → check `license.lic` validity and expiry (see [Licensing](licensing.md)).
+**Common issues:** no GPS output means check reference point alignment. TAK connection failed means verify certificate paths and server connectivity. License errors mean check `license.lic` validity and expiry (see [Licensing](licensing.md)).
 
 ## Data Outputs & Integrations
 
-Five equivalent output channels — pick whichever fits your integration: **REST** (`:8766`, poll), **WebSocket** (`:8765`, push, same message as REST's `/api/v1/latest`), **MQTT** (AWS IoT Core, per-target messages), **TAK/TLS** (CoT to a real TAK server), **FAAD C2** (CoT over plain UDP, no TAK server or certificates required). Full detail: [Data Outputs & Integrations](data-outputs-and-integrations.md).
+Five equivalent output channels are available; pick whichever fits your integration: **REST** (`:8766`, poll), **WebSocket** (`:8765`, push, same message as REST's `/api/v1/latest`), **MQTT** (AWS IoT Core, per-target messages), **TAK/TLS** (CoT over mutual-TLS, to a real TAK server or a FAAD C2 endpoint configured for TLS), and **FAAD C2** (Forward Area Air Defense Command and Control, CoT over plain UDP for an endpoint configured that way, no certificates required). Full detail: [Data Outputs & Integrations](data-outputs-and-integrations.md).
 
 ## Licensing
 
-A valid, hardware-bound `license.lic` is required to run the detection/positioning pipeline. Licenses are issued by Tiami Networks, bound to your specific hardware — check status locally with `polyedge-license-status.sh`. Full detail: [Licensing](licensing.md).
+A valid, hardware-bound `license.lic` is required to run the detection/positioning pipeline. Licenses are issued by Tiami Networks and bound to your specific hardware. Check status locally with `polyedge-license-status.sh`. Full detail: [Licensing](licensing.md).
 
 ## Model Finetuning
 
-Secure finetuning pipeline: ground-truth collection (DroneTag Mini) → data collection (`collect_nr_data_launcher.py`) → data setup/processing (`setup_data_launcher.py`) → secure finetuning (`secure_finetune`). Model weights are never exposed in plaintext. Full pipeline: [Model Finetuning](model-finetuning.md).
+This page is being rewritten. Contact Tiami Networks for current information on model finetuning.

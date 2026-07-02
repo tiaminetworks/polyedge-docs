@@ -7,16 +7,7 @@ parent: "PolyEdge Documentation"
 
 # Licensing
 
-PolyEdge requires a valid, hardware-bound license file (`license.lic`) to run the detection/positioning pipeline. Model weights are never distributed in plaintext — the license carries encrypted access to them.
-
-**Licenses are issued by Tiami Networks, bound to your specific hardware.** You don't generate or manage your own license — contact Tiami Networks for a new deployment, a renewal, or to move to different hardware.
-
-## What's in a license
-
-- **Hardware fingerprint** — bound to the specific machine it was issued for. A license won't validate on different hardware.
-- **Expiry date**
-- Encrypted access to your trained positioning model
-- **Optional API key** — if your license includes one, the orchestrator (:3000) and detection (:8766) REST APIs require a matching `X-API-Key` header on every request. If absent, those APIs are unauthenticated (the default).
+PolyEdge requires a valid, hardware-bound license file (`license.lic`) to run the detection/positioning pipeline. Licenses are issued by Tiami Networks and bound to your specific hardware. Contact Tiami Networks for a new deployment, a renewal, or a hardware change.
 
 ## Checking your license
 
@@ -25,12 +16,17 @@ polyedge-license-status.sh                  # status only
 polyedge-license-status.sh --show-api-key   # also reveal the embedded API key, if present
 ```
 
-Reports valid/invalid, licensee, expiry, and hardware-binding status without modifying anything — safe to run any time.
+This reports valid/invalid status, licensee, and expiry. It does not modify anything, so it can be run at any time.
 
-## What happens if it's invalid or missing
+## If the ISAC Engine won't start
 
-The streamer won't start the detection pipeline at all — license validation happens before initialization. If it expires while running, model-based (ML) predictions are disabled after repeated re-validation failures; the non-ML radar detection pipeline and REST/WebSocket servers continue running.
+A missing, expired, or hardware-mismatched license is one of several reasons `stream_main` can fail to start. Confirm the cause before contacting support:
 
-## Getting a new or updated license
+1. Run `polyedge-license-status.sh`. If it reports invalid, the license is the cause.
+2. If it reports valid and the ISAC Engine still won't start, check `journalctl -u polyedge-interact -f` for the actual startup error. The cause is something other than licensing.
 
-Contact Tiami Networks — for a renewal, a hardware change, or to add/rotate an API key on your license. You'll need your device's hardware identifiers, which `polyedge-license-status.sh` can help confirm are current.
+If the license is confirmed invalid, contact Tiami Networks with the output of `polyedge-license-status.sh` to arrange a renewal or replacement.
+
+## API key
+
+If your license includes an API key, the orchestrator (:3000) and detection (:8766) REST APIs require a matching `X-API-Key` header on every request. Retrieve it with `polyedge-license-status.sh --show-api-key`.

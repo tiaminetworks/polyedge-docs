@@ -12,16 +12,24 @@ Welcome to the PolyEdge documentation. This guide covers installing, operating, 
 
 ## What is PolyEdge?
 
-PolyEdge is **passive ISAC (Integrated Sensing and Communications) software** from Tiami Networks: it uses commercial LTE/NR and wideband RF as illuminators to detect and track targets, runs streaming inference, and ships results to operational tooling — without operating your own radar transmitter.
+PolyEdge is a real-time ISAC (Integrated Sensing and Communications) localization system that uses 5G NR downlink synchronization signals, and more broadly commercial LTE/NR/wideband RF, to track and locate targets, with TAK integration for tactical situational awareness.
 
-The core system is a **passive bistatic radar** pipeline: it correlates a reference path (the direct path from an illuminator you don't control, such as an existing 4G/5G tower) with a surveillance path (energy scattered off targets), forming range–Doppler data, running detection and clutter processing, and — when configured — ML inference and streaming outputs, including drone/RID detection.
+The core system is a **passive bistatic radar** pipeline. It correlates a reference path (the direct path from an illuminator you don't control, such as an existing 4G/5G tower) with a surveillance path (energy scattered off targets), forming range-Doppler data, running detection and clutter processing, and, when configured, ML inference and streaming outputs including drone/RID detection.
+
+System components:
+
+- **Real-time, non-cooperative target localization**: converts 5G NR frames to absolute target positions using ISAC.
+- **TAK integration**: broadcasts target locations to tactical systems.
+- **5G NR interface**: interfaces with 5G networks for signal data collection.
+- **License validation**: secure operation with hardware-bound licensing.
+- **Process orchestration**: concurrent management of the radio and ISAC Engine processes through the GUI's orchestrator API.
 
 <p align="center">
   <img src="assets/images/polyedge-isac.gif" alt="PolyEdge passive ISAC bistatic scenario" width="720" />
 </p>
-<p align="center"><em>PolyEdge ISAC — default passive mode: a cellular illuminator you don't control, a target, and your receive site.</em></p>
+<p align="center"><em>PolyEdge ISAC: default passive mode. A cellular illuminator you don't control, a target, and your receive site.</em></p>
 
-### PolyRAN — the active, gNB-integrated complement
+### PolyRAN: the active, gNB-integrated complement
 
 When sensing is co-located with the cellular stack on the gNB side, the network can schedule uplink-centric resources (e.g. SRS or PUSCH-framed uplink) so the DU runs Tiami ISAC alongside 5G-PHY.
 
