@@ -4,6 +4,7 @@ remote_theme: pmarsceill/just-the-docs
 search_enabled: true
 logo: "assets/images/tiami-networks-logo.png" # Relative path without baseurl
 title_only_logo: false
+favicon_ico: "/assets/images/favicon.ico"
 
 # Sidebar settings
 show_toc: true
