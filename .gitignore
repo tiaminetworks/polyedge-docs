@@ -3,3 +3,9 @@ _site/
 .jekyll-metadata
 .sass-cache/
 .DS_Store
+
+# Local preview only (not used by GitHub Pages CI)
+_config.local.yml
+docker-compose.yml
+.bundle/
+scripts/preview-docs.sh

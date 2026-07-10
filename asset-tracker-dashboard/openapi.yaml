@@ -1,0 +1,556 @@
+openapi: 3.1.0
+info:
+  title: PolyEdge Asset Tracker Dashboard API
+  version: 1.0.0
+  description: |
+    REST API consumed by the [Asset Tracker Dashboard](../asset-tracker-dashboard.html) web application.
+
+    All authenticated routes require a Cognito ID token in the `Authorization: Bearer` header.
+
+servers:
+  - url: https://drone-tracker.polyedge-analytics.com
+    description: Production (API Gateway + Lambda)
+  - url: http://localhost:4000
+    description: Local development backend
+
+tags:
+  - name: Public
+    description: Unauthenticated endpoints. ADS-B aircraft data is public; no login required.
+  - name: Targets
+    description: |
+      Live PolyEdge detections polled by the dashboard every 200 ms. Drone data includes ISAC,
+      RID, and NTN targets. Person data includes ground tracks.
+  - name: User
+    description: Tenant profile loaded immediately after login to apply company branding.
+  - name: Restricted Areas
+    description: |
+      Company-scoped geofence CRUD. Saved polygons drive breach and approach alerts on the map.
+
+paths:
+  /:
+    get:
+      tags: [Public]
+      summary: Root
+      description: Health/debug root. Returns a short JSON message.
+      operationId: root
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/adsb:
+    get:
+      tags: [Public]
+      summary: Get ADS-B Aircraft
+      description: |
+        Fetches live ADS-B aircraft positions near the requested map center. Uses an upstream
+        ADS-B provider with retry and in-memory cache fallback when the upstream is unavailable.
+      operationId: getAdsb
+      parameters:
+        - name: lat
+          in: query
+          description: Map center latitude (defaults to tenant default center)
+          schema:
+            type: number
+            format: double
+        - name: lng
+          in: query
+          description: Map center longitude (defaults to tenant default center)
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: ADS-B aircraft list (upstream format, cached on failure)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '503':
+          description: Upstream unavailable and no cached data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/drone:
+    get:
+      tags: [Targets]
+      summary: Get Drone Detections
+      description: |
+        Returns the latest PolyEdge drone detections for the authenticated user's device.
+        Data is read from the per-tenant DynamoDB table referenced in `UserLoginData`.
+
+        Supports multiple detection modes:
+        - **Mode 1 (ISAC):** passive radar localization
+        - **Mode 2 (RID):** Remote ID detections
+        - **Mode 3:** NTN / non-terrestrial targets (`target_flag = 3`)
+
+        Mode 3 entries with `trigger_flag` control whether mode 1 ISAC tracks are included.
+        Each drone object includes position, sensor/gNB metadata, confidence, NR params, and optional `aoa_deg`.
+      operationId: getDrone
+      security:
+        - CognitoBearer: []
+      responses:
+        '200':
+          description: Latest drone targets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DroneListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No DynamoDB table mapping for user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/persons:
+    get:
+      tags: [Targets]
+      summary: Get Person Detections
+      description: |
+        Returns person targets (`target_flag = 2`) for ground-person tracking on the map.
+      operationId: getPersons
+      security:
+        - CognitoBearer: []
+      responses:
+        '200':
+          description: Latest person targets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No DynamoDB table mapping for user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/drone-paths:
+    get:
+      tags: [Targets]
+      summary: Get Historical Drone Paths
+      description: |
+        Returns time-ordered drone flight paths for historical replay (EGPD deployment).
+        Queries DynamoDB for all points between `startDateTime` and `endDateTime`, grouped
+        by tag and mode.
+      operationId: getDronePaths
+      security:
+        - CognitoBearer: []
+      parameters:
+        - name: startDateTime
+          in: query
+          required: true
+          description: ISO 8601 UTC start timestamp (inclusive)
+          schema:
+            type: string
+            format: date-time
+        - name: endDateTime
+          in: query
+          required: true
+          description: ISO 8601 UTC end timestamp (inclusive)
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Grouped path histories
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DronePathsResponse'
+        '400':
+          description: Missing query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/user-info:
+    get:
+      tags: [User]
+      summary: Get User Info
+      description: Returns the authenticated user's company branding and layout preferences from `UserLoginData`.
+      operationId: getUserInfo
+      security:
+        - CognitoBearer: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfoResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/restricted-area:
+    get:
+      tags: [Restricted Areas]
+      summary: Get Restricted Area
+      description: Loads the company-scoped restricted-area polygon from DynamoDB (`restricted-areas-drone-tracker`).
+      operationId: getRestrictedArea
+      security:
+        - CognitoBearer: []
+      responses:
+        '200':
+          description: Restricted area geometry or null
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictedAreaGetResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags: [Restricted Areas]
+      summary: Save Restricted Area
+      description: Persists a restricted-area polygon for the user's company. Used for breach and approach alerts on the map.
+      operationId: saveRestrictedArea
+      security:
+        - CognitoBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestrictedAreaSaveRequest'
+      responses:
+        '200':
+          description: Area saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Missing restrictedArea in body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      tags: [Restricted Areas]
+      summary: Delete Restricted Area
+      description: Removes the company-scoped restricted area from DynamoDB.
+      operationId: deleteRestrictedArea
+      security:
+        - CognitoBearer: []
+      responses:
+        '200':
+          description: Area deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  securitySchemes:
+    CognitoBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        AWS Cognito ID token (RS256). The backend verifies the JWT against the Cognito JWKS
+        endpoint and extracts `cognito:username` for tenant lookup in `UserLoginData`.
+
+  responses:
+    Unauthorized:
+      description: Missing, invalid, or expired Authorization header
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+
+    GeoPosition:
+      type: object
+      properties:
+        latitude:
+          type: number
+        longitude:
+          type: number
+        altitude:
+          type: number
+          nullable: true
+
+    NrParams:
+      type: object
+      properties:
+        operator:
+          type: string
+        band:
+          type: string
+        frequency:
+          type: number
+        plmn_id:
+          type: string
+        ecid:
+          type: integer
+        enb_id:
+          type: integer
+        sector_id:
+          type: integer
+
+    DroneTarget:
+      type: object
+      properties:
+        droneId:
+          type: string
+        lat:
+          type: number
+          nullable: true
+        lon:
+          type: number
+          nullable: true
+        alt:
+          type: number
+          nullable: true
+        timestamp:
+          type: string
+          format: date-time
+        mode:
+          type: integer
+          description: '1 = ISAC, 2 = RID, 3 = NTN'
+        confidence:
+          type: number
+        velocity:
+          type: number
+        cell_id:
+          type: string
+        manufacturer:
+          type: string
+        target_flag:
+          type: integer
+        aoa_deg:
+          type: number
+          description: Angle of arrival from latest mode 3 entry when trigger_flag allows mode 1
+        ntn_range:
+          type: number
+        ntn_velocity:
+          type: number
+        sensor_position:
+          $ref: '#/components/schemas/SensorPosition'
+        gnb_position:
+          $ref: '#/components/schemas/GeoPosition'
+        sensor_max_radius:
+          type: number
+        nr_params:
+          $ref: '#/components/schemas/NrParams'
+
+    SensorPosition:
+      allOf:
+        - $ref: '#/components/schemas/GeoPosition'
+        - type: object
+          properties:
+            sensor_id:
+              type: string
+
+    DroneListResponse:
+      type: object
+      required: [drones]
+      properties:
+        drones:
+          type: array
+          items:
+            $ref: '#/components/schemas/DroneTarget'
+
+    PersonTarget:
+      type: object
+      properties:
+        personId:
+          type: string
+        name:
+          type: string
+        lat:
+          type: number
+        lon:
+          type: number
+        alt:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+        type:
+          type: string
+          example: PERSON
+        uniqueId:
+          type: string
+        target_flag:
+          type: integer
+        confidence:
+          type: number
+        velocity:
+          type: number
+        sensor_position:
+          $ref: '#/components/schemas/SensorPosition'
+        gnb_position:
+          $ref: '#/components/schemas/GeoPosition'
+        sensor_max_radius:
+          type: number
+        nr_params:
+          $ref: '#/components/schemas/NrParams'
+
+    PersonListResponse:
+      type: object
+      required: [persons]
+      properties:
+        persons:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonTarget'
+
+    PathPoint:
+      type: object
+      properties:
+        lat:
+          type: number
+        lon:
+          type: number
+        alt:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+        velocity:
+          type: number
+        confidence:
+          type: number
+
+    DronePath:
+      type: object
+      properties:
+        pathId:
+          type: string
+        droneId:
+          type: string
+        mode:
+          type: integer
+        tagId:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        avgAltitude:
+          type: number
+        avgVelocity:
+          type: number
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/PathPoint'
+
+    DronePathsResponse:
+      type: object
+      properties:
+        paths:
+          type: array
+          items:
+            $ref: '#/components/schemas/DronePath'
+
+    UserInfoResponse:
+      type: object
+      properties:
+        username:
+          type: string
+        company:
+          type: string
+          nullable: true
+        layout:
+          type: string
+          nullable: true
+        color1:
+          type: string
+          nullable: true
+        color2:
+          type: string
+          nullable: true
+
+    RestrictedAreaGetResponse:
+      type: object
+      properties:
+        restrictedArea:
+          type: object
+          nullable: true
+          additionalProperties: true
+          description: GeoJSON-like polygon structure used by the map UI
+
+    RestrictedAreaSaveRequest:
+      type: object
+      required: [restrictedArea]
+      properties:
+        restrictedArea:
+          type: object
+          additionalProperties: true

@@ -1,0 +1,694 @@
+openapi: 3.1.0
+info:
+  title: Agentic RF Planner API
+  version: 1.0.0
+  description: |
+    REST API for the [Agentic RF Planner](../rf-planner.html) web application — planning jobs, auth, mesh profiles, and RF parameters.
+
+    Protected routes require `Authorization: Bearer <token>` (Cognito JWT stored in `localStorage`).
+
+servers:
+  - url: http://localhost:8000
+    description: Local development (uvicorn)
+  - url: https://rf-planner.example.com
+    description: Deployed instance (URL varies by environment)
+
+tags:
+  - name: Planning
+    description: |
+      Core RF coverage planning. The UI calls `POST /api/plan/submit` then polls
+      `GET /api/plan/status/{job_id}` for each TX in the queue. Results drive heatmap,
+      sector overlay, and PolyEdge marker rendering.
+  - name: Ray Tracing
+    description: |
+      Multipath ray debug and TX→RX path computation. Used by 2D RT and 3D RT modes in the
+      planner sidebar. `POST /api/3d/plan-and-trace` combines coverage + trace in one call.
+  - name: Configuration
+    description: |
+      Runtime config (`GET /api/config`) exposes Google Maps key presence and default ray mode.
+      `GET /api/rf-params` loads GUI defaults from `configs/rf.params.yaml`.
+  - name: Geo
+    description: OSM building lookups and road-label overlays for the 3D Cesium map.
+  - name: UI Remote
+    description: |
+      Queue-based commands for an already-open `/3d` browser tab. External tools POST a plan
+      request; the UI polls and renders results in Cesium without a page reload.
+  - name: Auth
+    description: |
+      Cognito-backed signup, email verification, and login used by `login.html` and `verify.html`.
+      Token stored in `localStorage` as `rf_planner_auth_token`.
+  - name: Health
+    description: Liveness (`/api/health`) and timestamp ping (`/api/ping`) for monitoring.
+
+paths:
+  /api/health:
+    get:
+      tags: [Health]
+      summary: Health Check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /api/ping:
+    get:
+      tags: [Health]
+      summary: Ping
+      operationId: ping
+      responses:
+        '200':
+          description: Server timestamp
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  utc:
+                    type: string
+                    format: date-time
+
+  /api/config:
+    get:
+      tags: [Configuration]
+      summary: Get Runtime Config
+      description: |
+        Exposes frontend runtime settings including Google Maps API key presence,
+        mesh profile version, default ray mode, and loaded `rf.params.yaml` defaults.
+      operationId: getConfig
+      responses:
+        '200':
+          description: Runtime configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigResponse'
+
+  /api/rf-params:
+    get:
+      tags: [Configuration]
+      summary: Get RF Parameters
+      description: Returns attenuation and propagation defaults from `configs/rf.params.yaml`.
+      operationId: getRfParams
+      responses:
+        '200':
+          description: RF parameter file contents
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /api/plan:
+    post:
+      tags: [Planning]
+      summary: Run RF Planning
+      description: |
+        Runs the full RF planning pipeline for a transmitter location. Returns a coverage grid,
+        heatmap data, sector overlays, and optional UE placement recommendations.
+
+        Set `ray_mode` to `2d` for fast 2D propagation or `3d` / `3d_rt` for height-aware
+        multipath ray tracing. Pass `sectors` for non-omnidirectional coverage (angle-based or polygon).
+      operationId: planRf
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanRequest'
+      responses:
+        '200':
+          description: Planning result with heatmap and grid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanResult'
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/plan/submit:
+    post:
+      tags: [Planning]
+      summary: Submit Async Plan Job
+      description: |
+        Submits RF planning to a background worker and returns a `job_id`. Poll
+        `/api/plan/status/{job_id}` for completion. Results are cached by request parameters.
+      operationId: submitPlan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanRequest'
+      responses:
+        '200':
+          description: Job accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanSubmitResponse'
+
+  /api/plan/status/{job_id}:
+    get:
+      tags: [Planning]
+      summary: Get Plan Job Status
+      operationId: getPlanStatus
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Job status (processing, done, or error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanStatusResponse'
+
+  /api/3d/plan-and-trace:
+    post:
+      tags: [Ray Tracing]
+      summary: Plan Coverage and Trace TX→RX Path
+      description: |
+        Convenience endpoint for the 3D UI: runs coverage planning at the TX point, then traces
+        multipath rays to a specified RX location.
+      operationId: planAndTrace3d
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanAndTrace3DRequest'
+      responses:
+        '200':
+          description: Combined plan and ray-trace result
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /api/raytrace_debug:
+    post:
+      tags: [Ray Tracing]
+      summary: Debug Ray Trace
+      description: Computes a small set of multipath rays for UI visualization and debugging.
+      operationId: raytraceDebug
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RaytraceDebugRequest'
+      responses:
+        '200':
+          description: Ray paths for map overlay
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /api/raytrace_paths:
+    post:
+      tags: [Ray Tracing]
+      summary: Compute Ray Paths
+      operationId: raytracePaths
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RaytracePathsRequest'
+      responses:
+        '200':
+          description: Ray path geometry
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /api/roads/labels:
+    get:
+      tags: [Geo]
+      summary: Get Road Labels
+      description: Returns named OSM road labels near a point for the 3D map overlay.
+      operationId: getRoadLabels
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: lon
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: radius_m
+          in: query
+          schema:
+            type: number
+            default: 2500
+        - name: major_limit
+          in: query
+          schema:
+            type: integer
+            default: 24
+        - name: minor_limit
+          in: query
+          schema:
+            type: integer
+            default: 40
+      responses:
+        '200':
+          description: Road label list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  labels:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+                  query:
+                    type: object
+                    additionalProperties: true
+
+  /api/osm/buildings-near-point:
+    get:
+      tags: [Geo]
+      summary: Get Buildings Near Point
+      operationId: getBuildingsNearPoint
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: lon
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: radius_m
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OSM building footprints
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /api/ui/remote-plan-rf:
+    post:
+      tags: [UI Remote]
+      summary: Queue Remote Plan RF
+      description: |
+        Queues an RF plan for an already-open `/3d` browser tab. The UI polls
+        `/api/ui/remote-plan-rf/poll` to pick up the request and POST results back.
+      operationId: remotePlanRf
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemotePlanRFRequest'
+      responses:
+        '200':
+          description: Request queued
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /api/ui/remote-plan-rf/poll:
+    get:
+      tags: [UI Remote]
+      summary: Poll Remote Plan RF Queue
+      operationId: pollRemotePlanRf
+      responses:
+        '200':
+          description: Pending remote plan command or idle status
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      operationId: authLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthLoginRequest'
+      responses:
+        '200':
+          description: Authentication tokens
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /api/auth/signup:
+    post:
+      tags: [Auth]
+      summary: Sign Up
+      operationId: authSignup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthSignupRequest'
+      responses:
+        '200':
+          description: Signup initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /api/clear-cache:
+    post:
+      tags: [Configuration]
+      summary: Clear Planner Cache
+      description: Clears OSM, panorama, mesh-profile, and plan-result caches.
+      operationId: clearCache
+      responses:
+        '200':
+          description: Cache cleared
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+components:
+  responses:
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+
+    SectorConfig:
+      type: object
+      description: |
+        Sector definition. Types include omnidirectional (360°), angle-based (start/end azimuth),
+        and abstract polygon (vertices relative to TX).
+      properties:
+        sector_id:
+          type: string
+        sector_type:
+          type: string
+          enum: [omnidirectional, angle, polygon]
+        sector_freq_mhz:
+          type: number
+        sector_tx_power_dbm:
+          type: number
+        sector_azimuth_deg:
+          type: number
+        sector_beamwidth_h_deg:
+          type: number
+        sector_start_angle_deg:
+          type: number
+        sector_end_angle_deg:
+          type: number
+        polygon_vertices:
+          type: array
+          items:
+            type: object
+            properties:
+              lat:
+                type: number
+              lon:
+                type: number
+
+    PlanRequest:
+      type: object
+      required: [lat, lon]
+      properties:
+        lat:
+          type: number
+          description: Transmitter latitude
+        lon:
+          type: number
+          description: Transmitter longitude
+        freq_mhz:
+          type: number
+          default: 3500
+        tx_power_dbm:
+          type: number
+          default: 43
+        noise_floor_dbm:
+          type: number
+          nullable: true
+        noise_figure_db:
+          type: number
+          default: 7
+        sectors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SectorConfig'
+          nullable: true
+        subcarrier_spacing_khz:
+          type: number
+          default: 15
+        num_resource_blocks:
+          type: integer
+          default: 100
+        channel_bandwidth_mhz:
+          type: number
+          default: 20
+        num_tx_antennas:
+          type: integer
+          default: 1
+        num_rx_antennas:
+          type: integer
+          default: 1
+        mimo_mode:
+          type: string
+          default: SISO
+          enum: [SISO, SIMO, MISO, MIMO]
+        enable_link_adaptation:
+          type: boolean
+          default: true
+        ray_mode:
+          type: string
+          description: '2d, 3d, or 3d_rt'
+          nullable: true
+        tx_height_m:
+          type: number
+          default: 0
+        rx_height_m:
+          type: number
+          default: 1.5
+        max_range_m:
+          type: number
+          nullable: true
+        step_m:
+          type: number
+          nullable: true
+        dtheta_deg:
+          type: number
+          nullable: true
+        termination_rsrp_dbm:
+          type: number
+          nullable: true
+        building_attenuation:
+          type: object
+          additionalProperties: true
+          nullable: true
+        recommended_ue_count:
+          type: integer
+          default: 5
+
+    PlanAndTrace3DRequest:
+      allOf:
+        - $ref: '#/components/schemas/PlanRequest'
+        - type: object
+          required: [rx_lat, rx_lon]
+          properties:
+            rx_lat:
+              type: number
+            rx_lon:
+              type: number
+
+    RemotePlanRFRequest:
+      allOf:
+        - $ref: '#/components/schemas/PlanRequest'
+        - type: object
+          properties:
+            rx_lat:
+              type: number
+              nullable: true
+            rx_lon:
+              type: number
+              nullable: true
+
+    RaytraceDebugRequest:
+      type: object
+      required: [lat, lon]
+      properties:
+        lat:
+          type: number
+        lon:
+          type: number
+        ray_mode:
+          type: string
+          default: 3d_rt
+        tx_height_m:
+          type: number
+          default: 10
+        rx_height_m:
+          type: number
+          default: 1.5
+        freq_mhz:
+          type: number
+          default: 3500
+        tx_power_dbm:
+          type: number
+          default: 43
+        max_range_m:
+          type: number
+          default: 800
+        step_m:
+          type: number
+          default: 10
+        bearing_stride_deg:
+          type: number
+          default: 30
+        termination_rsrp_dbm:
+          type: number
+          default: -140
+
+    RaytracePathsRequest:
+      type: object
+      required: [tx_lat, tx_lon, rx_lat, rx_lon]
+      properties:
+        tx_lat:
+          type: number
+        tx_lon:
+          type: number
+        rx_lat:
+          type: number
+        rx_lon:
+          type: number
+        freq_mhz:
+          type: number
+        tx_power_dbm:
+          type: number
+        ray_mode:
+          type: string
+
+    PlanSubmitResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: submitted
+        job_id:
+          type: string
+          format: uuid
+
+    PlanStatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [processing, done, error]
+        result:
+          type: object
+          additionalProperties: true
+        detail:
+          type: string
+
+    PlanResult:
+      type: object
+      description: |
+        RF planning output including heatmap raster, coverage grid, sector metadata,
+        recommended UE placements, and timing diagnostics. Exact fields vary by ray_mode.
+      additionalProperties: true
+
+    ConfigResponse:
+      type: object
+      properties:
+        google_maps_api_key:
+          type: string
+        google_maps_api_key_present:
+          type: boolean
+        mesh_profile_version:
+          type: string
+        default_ray_mode:
+          type: string
+        rf_params:
+          type: object
+          additionalProperties: true
+
+    AuthLoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    AuthSignupRequest:
+      type: object
+      required: [username, email, password]
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        signup_code:
+          type: string
+          nullable: true

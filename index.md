@@ -37,6 +37,8 @@ When sensing is co-located with the cellular stack on the gNB side, the network 
 
 | Need | Read |
 |---|---|
+| PolyEdge sensor hardware specs | [Sensor Description]({{ '/sensor-description.html' | relative_url }}) |
+| Mount the sensor hardware (tripod/pole) | [Sensor Installation and Mounting]({{ '/sensor-installation.html' | relative_url }}) |
 | Install PolyEdge on a device | [Installation](installation.md) |
 | Use the web GUI or call the APIs | [Interacting with PolyEdge](interacting-with-polyedge.md) |
 | Push a new software version to a deployed device | [Updating PolyEdge](updating-polyedge.md) |
@@ -44,4 +46,6 @@ When sensing is co-located with the cellular stack on the gNB side, the network 
 | Consume detections via REST, WebSocket, MQTT, or TAK | [Data Outputs & Integrations](data-outputs-and-integrations.md) |
 | Check your license status | [Licensing](licensing.md) |
 | Collect ground truth and finetune the positioning model | [Model Finetuning](model-finetuning.md) |
+| Use the Asset Tracker dashboard | [Asset Tracker Dashboard]({{ '/asset-tracker-dashboard.html' | relative_url }}) |
+| Use the RF Planner | [RF Planner]({{ '/rf-planner.html' | relative_url }}) |
 | Full API reference (OpenAPI-generated) | [API Reference](api-reference.md) |
